@@ -41,6 +41,23 @@ public class TagJobCommand extends Command {
         this.tags = tags;
     }
 
+
+    private void unionJobApplicationTags(Set<Tag> existing) {
+        this.tags.addAll(job.getTags());
+    }
+
+    private void validateJobApplicationTagsLimit() throws JobCommandException {
+        if (this.tags.size() > MAX_TAGS) {
+            throw new JobCommandException(MESSAGE_MAX_TAGS);
+        }
+    }
+
+    private void setJobTags(JobApplication job) throws JobCommandException {
+        unionJobApplicationTags(job.getTags());
+        validateJobApplicationTagsLimit();
+        job.setTags(this.tags);
+    }
+
     @Override
     public CommandResult execute(Model model) throws JobCommandException {
         requireNonNull(model);
@@ -52,13 +69,7 @@ public class TagJobCommand extends Command {
         }
 
         JobApplication jobToTag = lastShownList.get(targetIndex.getZeroBased());
-        this.tags.addAll(jobToTag.getTags());
-
-        if (this.tags.size() > MAX_TAGS) {
-            throw new JobCommandException(MESSAGE_MAX_TAGS);
-        }
-
-        jobToTag.setTags(tags);
+        setJobTags(jobToTag, tags);
 
         // Update the viewed job applications
         model.updateFilteredJobApplicationList(PREDICATE_SHOW_ALL_APPLICATIONS);
