@@ -41,17 +41,13 @@ public class TagJobCommand extends Command {
         this.tags = tags;
     }
 
-    private void setJobTags(
-        JobApplication job, 
-        Set<Tag> tags
-    ) throws JobCommandException {
-        Set<Tag> copyOfTags = this.tags;
-        copyOfTags.addAll(job.getTags());
-        if (copyOfTags.size() > MAX_TAGS) {
+    private void setJobTags(JobApplication job) throws JobCommandException {
+        this.tags.addAll(job.getTags());
+        if (this.tags.size() > MAX_TAGS) {
             throw new JobCommandException(MESSAGE_MAX_TAGS);
         }
 
-        job.setTags(copyOfTags);
+        job.setTags(this.tags);
     }
 
     @Override
