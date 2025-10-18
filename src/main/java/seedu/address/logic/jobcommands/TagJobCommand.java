@@ -41,12 +41,20 @@ public class TagJobCommand extends Command {
         this.tags = tags;
     }
 
-    private void setJobTags(JobApplication job) throws JobCommandException {
+
+    private void unionJobApplicationTags(Set<Tag> existing) {
         this.tags.addAll(job.getTags());
+    }
+
+    private void validateJobApplicationTagsLimit() throws JobCommandException {
         if (this.tags.size() > MAX_TAGS) {
             throw new JobCommandException(MESSAGE_MAX_TAGS);
         }
+    }
 
+    private void setJobTags(JobApplication job) throws JobCommandException {
+        unionJobApplicationTags(job.getTags());
+        validateJobApplicationTagsLimit();
         job.setTags(this.tags);
     }
 
