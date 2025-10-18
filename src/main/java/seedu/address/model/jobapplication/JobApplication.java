@@ -102,8 +102,23 @@ public class JobApplication {
     /**
      * Sets the list of tags
      */
-    public void setTags(Set<Tag> tags) {
+    public void setTags(Set<Tag> tags) throws JobCommandException {
+        if (tags.size() > MAX_TAGS) {
+            throw new JobCommandException(MESSAGE_MAX_TAGS);
+        }
         this.tags = tags;
+    }
+
+    /**
+     * Add tags to list
+     */
+    public void addTags(Set<Tag> tags) throws JobCommandException {
+        Set<Tag> copyOfTags = this.tags;
+        copyOfTags.addAll(tags);
+        if (copyOfTags.size() > MAX_TAGS) {
+            throw new JobCommandException(MESSAGE_MAX_TAGS);
+        }
+        this.tags = copyOfTags;
     }
 
     /**

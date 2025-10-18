@@ -52,13 +52,7 @@ public class TagJobCommand extends Command {
         }
 
         JobApplication jobToTag = lastShownList.get(targetIndex.getZeroBased());
-        this.tags.addAll(jobToTag.getTags());
-
-        if (this.tags.size() > MAX_TAGS) {
-            throw new JobCommandException(MESSAGE_MAX_TAGS);
-        }
-
-        jobToTag.setTags(tags);
+        jobToTag.setTags(this.tags);
 
         // Update the viewed job applications
         model.updateFilteredJobApplicationList(PREDICATE_SHOW_ALL_APPLICATIONS);
