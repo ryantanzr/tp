@@ -19,32 +19,21 @@ public class CommandResult {
     /** The application should exit. */
     private final boolean exit;
 
-    /** The data should be saved to storage. */
-    private final boolean shouldSave;
-
     /**
      * Constructs a {@code CommandResult} with the specified fields.
      */
-    public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean shouldSave) {
+    public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
-        this.shouldSave = shouldSave;
     }
 
     /**
-     * Constructs a {@code CommandResult} with the specified fields, shouldSave set to false.
-     */
-    public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
-        this(feedbackToUser, showHelp, exit, false);
-    }
-
-    /**
-     * Constructs a {@code CommandResult} with the specified {@code feedbackToUser},
+     * Constructs a {@code CommandResult} with the specified {@code feedbackToUser}
      * and other fields set to their default value.
      */
     public CommandResult(String feedbackToUser) {
-        this(feedbackToUser, false, false, false);
+        this(feedbackToUser, false, false);
     }
 
     public String getFeedbackToUser() {
@@ -57,10 +46,6 @@ public class CommandResult {
 
     public boolean isExit() {
         return exit;
-    }
-
-    public boolean shouldSave() {
-        return shouldSave;
     }
 
     @Override
@@ -77,13 +62,12 @@ public class CommandResult {
         CommandResult otherCommandResult = (CommandResult) other;
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
-                && exit == otherCommandResult.exit
-                && shouldSave == otherCommandResult.shouldSave;
+                && exit == otherCommandResult.exit;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, shouldSave);
+        return Objects.hash(feedbackToUser, showHelp, exit);
     }
 
     @Override
@@ -92,7 +76,6 @@ public class CommandResult {
                 .add("feedbackToUser", feedbackToUser)
                 .add("showHelp", showHelp)
                 .add("exit", exit)
-                .add("shouldSave", shouldSave)
                 .toString();
     }
 
