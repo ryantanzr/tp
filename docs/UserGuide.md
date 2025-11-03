@@ -392,6 +392,7 @@ Format: `list`
 </div>
 
 <br>
+![list command](images/list.png)
 
 [<u>Back to Command Summary</u>](#command-summary)
 
@@ -434,6 +435,7 @@ Examples:
 * `add n/Netflix r/Backend Engineer s/APPLIED d/15 December t/remote t/urgent` - With tags
 
 <br>
+![add command](images/add.png)
 
 [<u>Back to Command Summary</u>](#command-summary)
 
@@ -499,8 +501,6 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
     * Both
 
 Before: `find morgan engineer`
-
-![find command before](images/find-command-before.png)
 
 After: Returns all applications where company contains "morgan" OR role contains "engineer"
 
@@ -578,9 +578,6 @@ Sorts the current list of applications by a chosen field, in ascending or descen
 - `sort company desc`
 - `sort role ascending`
 
-Before:
-![sort_before.png](images/sort_before.png)
-
 After:
 ![sort_after.png](images/sort_after.png)
 
@@ -618,9 +615,6 @@ Format: `update INDEX [n/COMPANY_NAME] [r/ROLE] [s/STATUS] [d/DEADLINE] [t/TAG]â
 * `update 4 d/2027-01-15T14:00` - Updates deadline with specific time.
 * `update 1 t/` - Removes all tags from the 1st application.
 
-Before:
-
-![update_before.png](images/update_before.png)
 
 After updating with `update 2 s/INPROGRESS d/2027-01-15T17:00 t/priority t/urgent`:
 
@@ -677,10 +671,6 @@ If you add a mix of duplicate and new tags, the new tags will be added whilst du
 - `tag 1 t/fast-response t/rolling`
 - `tag 6 t/late-deadline t/backup-plan`
 
-Before `tag 1 t/Search`:
-
-![tag_before.png](images/tag_before.png)
-
 After tagging:
 
 ![tag_after.png](images/tag_after.png)
@@ -714,10 +704,6 @@ Examples:
 - `untag 1 t/SQL`
 - `untag 2 t/6-Month t/C++`
 - `untag 3 t/python_v3.12 t/BlockChain t/Full-Stack`
-
-Before `untag 1 t/Search`:
-
-![Untag_before.png](images/Untag_before.png)
 
 After untagging:
 
