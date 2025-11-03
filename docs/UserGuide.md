@@ -383,7 +383,10 @@ HustleHub data is automatically saved after any command that changes the data. T
 HustleHub data is saved automatically as a JSON file `[JAR file location]/data/JobApplications.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes to the data file make its format invalid, HustleHub will discard all data and start with an empty data file at the next run. Hence, it is recommended to take a backup of the file before editing it.<br>
+If your changes to the data file make its format invalid, HustleHub will discard all data and start with an empty data file at the next run. Hence, it is recommended to take a backup of the file before editing it.
+
+<br>
+
 Furthermore, certain edits can cause HustleHub to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -406,7 +409,9 @@ Format: `add n/COMPANY_NAME r/ROLE s/STATUS [d/DEADLINE] [t/TAG]…​`
 :bulb: **Tips:** <br>
 
 * The deadline (`d/`) is **optional**. If omitted, it defaults to today at 23:59.
+
 * You can use **flexible date formats** for the deadline - see the Date & Time Formats section above for all supported formats.
+
 * New applications appear at the **top** of your list for easy visibility.
 
 </div>
@@ -532,7 +537,9 @@ Format: `update INDEX [n/COMPANY_NAME] [r/ROLE] [s/STATUS] [d/DEADLINE] [t/TAG]�
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 
 * Deadline cannot be in the past. Please provide a future date (supports flexible formats - see Date & Time Formats section).
+
 * Updating company name and/or role may result in duplicate applications if the combination already exists.
+
 * Valid status values are: `APPLIED`, `INPROGRESS`, or `REJECTED` (case-insensitive).
 
 </div>
@@ -689,7 +696,7 @@ This section helps you resolve common errors you might encounter while using Hus
 ✅ update 1 d/2026-01-15T09:00
 ```
 
-<div>
+<div markdown="block" class="alert alert-info">
 
 :bulb: **Tip:**
 
