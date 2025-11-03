@@ -146,17 +146,11 @@ The `Model` component,
 
 The `Storage` component manages **persistence (saving and loading)** for job application and user preference data, using the JSON format.
 
-<details>
-    <summary><b>Technical Remarks</b></summary>
 
 * For easy customisation/replacement, `JobApplicationStorage` and `UserPrefStorage` are left as interfaces to abstract the storage component.
-
 * `DataStorageManager` can be treated as a `JobApplicationStorage` or `UserPrefStorage` object as it implements both interfaces.
-
 * Depends on some classes in the `Model` component such as `JobApplication` as it saves or loads objects from said component.
-* `JsonSerializableJobApplicationList & SerializableJobApplication` have a dependency with on JobApplications as both classes possess logic to [deserialize/serialize](#glossary) `JobApplication` objects.
-
-</details>
+* `JsonSerializableJobApplicationList & SerializableJobApplication` have a dependency with on JobApplications as both classes possess logic to deserialize/serialize `JobApplication` objects.
 
 ---
 
@@ -166,102 +160,17 @@ Classes used by multiple components are in the `seedu.job.commons` package.
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Implementation**
-
-This section describes some noteworthy details on how certain features are implemented.
-
-### Card Highlighting Feature
-
-#### Implementation
-
-The card highlighting mechanism provides visual feedback to users by highlighting recently modified job application cards with an elegant white-to-blue gradient. This feature is implemented across the Model, Logic, and UI layers.
-
-**Architecture Components:**
-
-The implementation involves:
-* `Model` & `ModelManager`: Stores the recently modified `JobApplication`
-* `Logic` & `LogicManager`: Exposes the recently modified application to the UI
-* Command classes: Set or clear the recently modified application based on operation type
-* `JobApplicationListPanel`: Tracks and refreshes the view when highlighting changes
-* `JobApplicationCard`: Conditionally applies CSS highlighting class
-* `MainWindow`: Synchronizes highlight state after each command execution
-
-**Key Operations:**
-
-* `Model#setRecentlyModifiedApplication(JobApplication)` — Sets the application to be highlighted
-* `Model#getRecentlyModifiedApplication()` — Returns the currently highlighted application
-* `JobApplicationListPanel#setRecentlyModifiedApplication(JobApplication)` — Updates the panel and refreshes the view
-
-**Command Behavior:**
-
-Commands are categorized into two groups:
-
-1. **Modifying Commands** (set highlight):
-   - `AddJobCommand` - Highlights the newly added application
-   - `UpdateJobCommand` - Highlights the updated application  
-   - `TagJobCommand` - Highlights the tagged application
-   - `UntagJobCommand` - Highlights the untagged application
-
-2. **Non-Modifying Commands** (clear highlight):
-   - `DeleteJobCommand` - Clears all highlights
-   - `FilterCommand` - Clears all highlights
-   - `SortCommand` - Clears all highlights
-   - `FindCommand` - Clears all highlights
-
-**UI Implementation:**
-
-The `JobApplicationCard` constructor accepts an `isRecentlyModified` boolean parameter. When `true`, it adds the CSS class `"recently-modified"` to the card pane, which applies:
-* White-to-blue gradient background (left to right)
-* Enhanced blue-tinted shadow for subtle emphasis
-* Maintains consistent padding and border radius
-
-**Example Usage Scenario:**
-
-Step 1. User executes `tag 1 t/urgent`. The `TagJobCommand` calls `model.setRecentlyModifiedApplication(taggedJob)`.
-
-Step 2. `MainWindow#executeCommand()` calls `jobApplicationListPanel.setRecentlyModifiedApplication(logic.getRecentlyModifiedApplication())`.
-
-Step 3. The panel refreshes, and the card at index 1 is rendered with the highlight gradient.
-
-Step 4. User executes `filter s/APPLIED`. The `FilterCommand` calls `model.setRecentlyModifiedApplication(null)`.
-
-Step 5. The panel refreshes, and all cards are rendered without highlighting.
-
-#### Design Considerations:
-
-**Aspect: Where to store the recently modified application:**
-
-* **Alternative 1 (current choice):** Store in Model layer
-  * Pros: Centralized state management, accessible to all components
-  * Cons: Adds additional state to Model
-
-* **Alternative 2:** Store in UI layer only
-  * Pros: Simpler model, UI-specific concern stays in UI
-  * Cons: Difficult to synchronize across command executions, loss of state on view refresh
-
-**Aspect: How to identify recently modified applications:**
-
-* **Alternative 1 (current choice):** Use object equality comparison
-  * Pros: Simple, works with immutable command pattern
-  * Cons: Requires exact object reference match
-
-* **Alternative 2:** Use unique identifier (e.g., company + role)
-  * Pros: More robust to object recreation
-  * Cons: More complex logic, potential edge cases with duplicates
+## Design Considerations
 
 ### Job Application Uniqueness
 
-#### Design Decision
-
-**What makes a job application unique?**
 
 A job application in HustleHub is uniquely identified by the combination of:
 - **Company Name** (case-sensitive)
 - **Role** (case-sensitive)
+- **Deadline**
 
-The system enforces that no two job applications can have the same company name and role combination.
-
-**Implementation:**
+**Uniqueness Implementation:**
 
 ```java
 public final String getUniqueKey() {
@@ -274,153 +183,72 @@ public boolean isSameJobApplication(JobApplication otherJobApplication) {
 }
 ```
 
-#### Why This Choice?
-
-**Requirements Analysis:**
-
-1. **Target User Behavior**: Computing students typically apply to each company for a specific role once per application cycle
-2. **Simplicity**: Students think in terms of "I applied to Google for SWE" - a natural mental model
-3. **Prevents Accidental Duplicates**: Guards against users inadvertently adding the same application multiple times
-4. **Data Integrity**: Ensures clean, organized tracking without confusing duplicate entries in the UI
+**Duplicate Handling:**
+* Given that companies allows users to have 1 job application per job opening. Minimally these 2 compulsory values are required. Adding additional fields may allow even more duplicate-related issues to arise.
 
 **Alternative Considerations:**
 
 We considered but rejected these alternatives:
 
-| Uniqueness Criteria | Reason for Rejection |
-|---------------------|---------------------|
-| Company + Role + Deadline | Deadline changes during updates would cause unexpected conflicts; doesn't match user mental model |
-| Company + Role + Tags | Tags are optional and mutable; would force users to add tags to differentiate positions; breaks tag flexibility |
-| Company + Role + Status | Status changes as application progresses; would prevent natural status updates |
+| Uniqueness Criteria       | Reason for Rejection                                                                                            |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------|
+| Company + Role + deadline | Consider that users are restricted to 1 application per job opening.                                            |
+| Company + Role + Tags     | Tags are optional and mutable; would force users to add tags to differentiate positions; breaks tag flexibility |
+| Company + Role + Status   | Status changes as application progresses; would prevent natural status updates                                  |
 
-#### Pros and Cons
-
-**Advantages ✅**
-
-1. **Simple and Predictable**
-   - Users understand: "One application per company-role pair"
-   - Clear error messages: "You already have an application for this position"
-   - No surprise conflicts from field updates
-
-2. **Minimal Edge Cases**
-   - Only checks 2 required fields (no null handling needed)
-   - Both fields are conceptually immutable (company name and role title don't change)
-   - Consistent behavior across add and update operations
-
-3. **Clean User Experience**
-   - No confusing duplicate "Google | Software Engineer" entries in the UI
-   - Tags remain purely organizational (can be added/removed freely)
-   - Natural workflow for status/deadline updates
-
-4. **Flexible Within Constraints**
-   - Users can differentiate similar positions in the role field:
-     * "Software Engineer - Backend Team"
-     * "Software Engineer (Cloud Infrastructure)"
-     * "SWE - Seattle Office"
-
-**Limitations ❌**
-
-1. **Re-applications Require Deletion**
-   - If rejected and reapplying later, user must delete old entry first
-   - Workaround: Keep old entry and update deadline/status
-   - Future enhancement: Add "clone" or "reapply" command
-
-2. **Same Role at Multiple Teams**
-   - Cannot track "Google SWE - Cloud" and "Google SWE - Search" as separate entries with identical role names
-   - Workaround: Differentiate in the role field itself
-   - Encourages explicit role specification, improving data clarity
-
-3. **No Built-in Historical Tracking**
-   - Previous applications to the same company-role are lost if deleted
-   - Workaround: Update status to REJECTED instead of deleting
-   - Future enhancement: Add archiving feature
-
-#### Design Considerations
-
-**Aspect: What fields determine uniqueness?**
-
-* **Alternative 1 (current choice):** Company + Role only
-  * Pros: Simple mental model, prevents accidental duplicates, minimal edge cases
-  * Cons: Cannot track re-applications or multiple teams for same role title
-
-* **Alternative 2:** Company + Role + Deadline
-  * Pros: Allows re-applications with different deadlines
-  * Cons: Updating deadline causes conflicts; same deadline = artificial conflict
-
-* **Alternative 3:** Company + Role + Tags
-  * Pros: Flexible differentiation using existing tag system
-  * Cons: Tags become mandatory for duplicates; mutable tags break uniqueness; confusing UX
-
-**Aspect: Should tags affect uniqueness?**
-
-* **Alternative 1 (current choice):** Tags are purely organizational
-  * Pros: Tags remain flexible and optional; no unexpected conflicts from tag changes
-  * Cons: Cannot use tags to differentiate positions
-
-* **Alternative 2:** Include tags in uniqueness check
-  * Pros: Allows tracking multiple same-titled positions
-  * Cons: Removing tags creates conflicts; forces tag usage; changes tag purpose from organizational to structural
-
-**Conclusion:** The company + role uniqueness provides the best balance of simplicity, usability, and alignment with user needs. The limitations can be addressed through user guidance (role naming conventions) and future enhancements (clone/archive features).
-
----
-
-### Tag Management Feature
-
-#### Implementation
+### Tag Management
 
 The tag management feature allows users to add and remove tags from job applications. Tags are implemented as immutable `Tag` objects with validation constraints.
-
-**Tag Constraints:**
-* Must be a single word (no spaces)
-* Maximum 30 characters
-* Can contain letters, numbers, and up to 2 special characters from: `-`, `.`, `@`, `#`, `_`, `+`
-* Each application can have up to 3 tags
 
 **Key Classes:**
 * `Tag`: Represents an immutable tag with validation
 * `TagJobCommand`: Adds tags to a job application
 * `UntagJobCommand`: Removes tags from a job application
 
+**Duplicate Handling:**
+* Tags are case-insensitive during computation to disallow tags like `t/Java` and `t/java` from existing at the same time as they are fundamentally the same tag.
+* Note that the displayed case is preserved to allow users to see their original input.
+
 **Tag Command Implementation:**
 
 The `TagJobCommand` creates a new `JobApplication` instance with the updated tag set, following the immutable pattern:
 
+<img src="images/TagSequenceDiagram.png"/>
+
 1. Retrieves the target application from the filtered list
-2. Validates tag capacity (max 3 tags)
-3. Creates new application with `createTaggedJob()` method
-4. Calls `model.setJobApplication()` to replace the old application
-5. Sets the newly tagged application as recently modified
+2. Checks if the index is invalid
+3. Validates tag capacity (max 3 tags)
+4. Creates new application with `createTaggedJob()` method
+5. Calls `model.setJobApplication()` to replace the old application
+
 
 **Untag Command Implementation:**
 
 Similar to tag command but removes tags:
 
+<img src="images/UntagSequenceDiagram.png"/>
+
 1. Retrieves the target application
-2. Validates that all tags to remove exist
-3. Creates new application with `createUntaggedJob()` method
-4. Replaces and highlights the application
+2. Checks if the index is invalid
+3. Validates that all tags to remove exist
+4. Creates new application with `createUntaggedJob()` method
+5. Calls `model.setJobApplication()` to replace the old application
 
-**Error Handling:**
 
-The feature provides clear, actionable error messages:
-* **Tag capacity exceeded**: Explains the limit and suggests using `untag` first
-* **Tag doesn't exist**: Clarifies which tags don't exist and suggests checking current tags
-* **Invalid tag format**: Explains the validation rules with examples
+---
 
 ### [Proposed] Job Application Expiry
 
 #### Requirements
 
-This feature automatically marks job applications as STALE when they have not been edited for 14 days.
+This feature intends to mark job applications as `STALE` when they have not been edited for 14 days.
 
 - Add a new status value to the existing status enum: `STALE`.
 - Add a new field to `JobApplication`: `lastEditedTime` (type: `java.time.LocalDateTime`). This field records the last time the application was modified by any modifying command (add, update, tag, untag).
-- On application start-up, HustleHub must perform a one-time calculation over all persisted job applications and set any application whose `lastEditedTime` is 14 full days (>= 14 days) in the past to have status `STALE`.
+- On application start-up, HustleHub will perform a one-time calculation over all persisted job applications and set any application whose `lastEditedTime` is 14 full days (>= 14 days) in the past to have status `STALE`.
 
-Notes / assumptions:
-- If a persisted application does not contain a `lastEditedTime` (older data format), treat its `lastEditedTime` as the time the application was loaded on startup (i.e., `LocalDateTime.now()` at load). This avoids accidentally marking legacy data as stale unless the user actually hasn't edited it since file creation — see migration notes below.
-- `STALE` is intended to be an additional, non-terminal status used to surface older, unattended applications. It does not replace `REJECTED` and may coexist with other workflows. By default the startup scan will set `STALE` for any application regardless of its current status, except where doing so would conflict with business rules you prefer (see alternatives below). If you want `REJECTED` or other terminal statuses to be exempt, specify and we can update the algorithm accordingly.
+Notes:
+- `STALE` is intended to be an additional, non-terminal status used to surface older, unattended applications. It does not replace `REJECTED` and may coexist with other workflows.
 
 #### Data model changes
 
@@ -431,63 +259,19 @@ Notes / assumptions:
    - Add: `private final LocalDateTime lastEditedTime;`
    - Constructor(s) and factory methods must accept and persist `lastEditedTime`.
    - All modifying operations (add, update, tag, untag) must set `lastEditedTime = LocalDateTime.now()` for the newly created `JobApplication` instance.
-   - `SerializableJobApplication` (storage layer) must be updated to read/write `lastEditedTime` (ISO-8601 format via `LocalDateTime.toString()` / `LocalDateTime.parse(...)`). When parsing older JSON that lacks the field, fall back to `LocalDateTime.now()` (see migration note).
+   - `SerializableJobApplication` (storage layer) must be updated to read/write `lastEditedTime` (ISO-8601 format via `LocalDateTime.toString()` / `LocalDateTime.parse(...)`).
 
 #### Startup calculation (where to run)
+- Run the staleness calculation once during application startup after the data is read from disk in `MainApp.initModelManager()`.
 
-Run the staleness calculation once during application startup after the persisted data is read from disk but before the `ModelManager` is constructed or before the `Logic`/`Ui` components are initialized and shown. Concretely, a good spot is inside `MainApp.init()` after `storage.readDataFile()` returns the `List<JobApplication>` and before calling `new ModelManager(...)`.
-
-Example high-level algorithm (pseudo-code):
-
-```java
-// in MainApp.init() after reading applicationList from storage
-LocalDateTime now = LocalDateTime.now();
-Duration staleThreshold = Duration.ofDays(14);
-List<JobApplication> migrated = new ArrayList<>();
-for (JobApplication app : applicationList) {
-   LocalDateTime lastEdited = app.getLastEditedTime();
-   if (lastEdited == null) {
-      // migration fallback: treat as just-loaded
-      lastEdited = now;
-   }
-   if (Duration.between(lastEdited, now).compareTo(staleThreshold) >= 0) {
-      if (app.getStatus() != JobApplication.Status.STALE) {
-         JobApplication staleApp = app.withStatus(JobApplication.Status.STALE)
-                                .withLastEditedTime(app.getLastEditedTime());
-         migrated.add(staleApp);
-         continue;
-      }
-   }
-   migrated.add(app);
-}
-// use `migrated` list to build ModelManager / JobBook
-```
-
-Notes:
-- The sample uses immutable-style `withStatus(...)` / `withLastEditedTime(...)` helpers that return a new `JobApplication` instance; implement equivalent constructors if your codebase uses a different pattern.
-- Running the migration in `MainApp.init()` ensures the UI and logic always see the canonical (post-migration) state and that `ModelManager` / `JobBook` invariants (e.g., uniqueness) are preserved.
-
-#### Persistence and migration
-
+#### Persistence
 - Update `SerializableJobApplication` / `JsonSerializableJobApplicationList` to include `lastEditedTime` when serializing.
-- For backwards compatibility, when deserializing JSON that lacks `lastEditedTime`, set `lastEditedTime = LocalDateTime.now()` (or optionally `Files.getLastModifiedTime(path)` if you prefer file time semantics). Document this behavior in the release notes so users understand the migration effect.
 
 #### Command behavior changes
-
 - Every command that modifies a job application must update `lastEditedTime` to `LocalDateTime.now()` on the newly created `JobApplication` object that replaces the old one. This includes: `AddJobCommand`, `UpdateJobCommand`, `TagJobCommand`, `UntagJobCommand` (and any future modifying commands such as `Clone`, `Archive`, etc.).
 
-#### Edge cases & testing
-
+#### Edge cases
 - Timezones: Use `LocalDateTime` consistently across serialization and comparisons; if your app will run across machines in different timezones, consider `ZonedDateTime` or persist UTC (`Instant`) instead. For single-user desktop app, `LocalDateTime` is acceptable.
-- Clock skew: If tests or users modify system clocks, behavior will follow the system clock. Consider adding a clock abstraction for testability.
-- Tests to add:
-  - Unit: `isStale(lastEditedTime, now)` boundary tests (13d23h59m -> false; 14d00h00m -> true).
-  - Integration: Persisted JSON without `lastEditedTime` -> migration does not accidentally mark as stale unless it truly is.
-
-#### Alternatives / configuration
-
-- Make the stale threshold configurable (user preference or config.json) instead of fixed 14 days.
-- Exempt certain statuses (e.g., `REJECTED`) from being set to `STALE` on startup. If desired, update the startup condition to only mark applications whose status is in a configurable set (default: APPLIED, INPROGRESS).
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -523,42 +307,42 @@ HustleHub empowers computing students to **efficiently manage their job applicat
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                    | I want to …​                                                                                              | So that I can…​                                                           |
-|----------|----------------------------|-----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `* * *`  | student                    | view the list of all my job applications                                                                  | see everything I'm tracking in one place                                  |
-| `* * *`  | student                    | add job application details (company name, role, application status, deadline)                            | track multiple applications efficiently                                   |
-| `* * *`  | student                    | delete a job application                                                                                  | remove entries I no longer want to track                                  |
-| `* * *`  | student                    | view details of a specific job application                                                                | review all the information I've saved about that application              |
-| `* *`    | student                    | update job application details                                                                            | keep my records current as my applications progress                       |
-| `* *`    | student                    | sort applications by deadline                                                                             | prioritize applications that need attention first                         |
-| `* *`    | student                    | sort applications by company name                                                                         | organize my applications alphabetically                                   |
-| `* *`    | student                    | sort applications by status                                                                               | group applications by their current stage                                 |
-| `* *`    | student                    | search for job applications by keyword                                                                    | quickly find a specific application                                       |
-| `* *`    | student                    | filter applications by company name                                                                       | focus on applications from a particular employer                          |
-| `* *`    | student                    | filter applications by status                                                                             | view only applications at a specific stage                                |
-| `* *`    | student                    | add custom tags to job applications                                                                       | categorize them by priority, location, or other criteria                  |
-| `* *`    | student                    | remove tags from applications                                                                             | update categorization as my needs change                                  |
-| `* *`    | student                    | see recently modified applications highlighted                                                            | quickly identify which applications I just updated                        |
-| `* *`    | student                    | set and view application deadlines with date and time                                                     | manage my time effectively and submit applications on time                |
-| `* *`    | student                    | track application status (applied, in progress, rejected)                                                 | know the current stage of each application                                |
-| `* *`    | student with many applications | clear the application list                                                                             | start fresh when needed                                                   |
-| `* *`      | new user                   | see usage instructions                                                                                    | learn how to use the app when I forget commands                           |
-| `* *`      | student                    | have data automatically persisted                                                                         | recover my application data after closing the app                         |
-| `*`      | student                    | export my job application data                                                                            | back up my data or share it with career counselors                        |
-| `*`      | student                    | archive old or rejected applications                                                                      | keep my active list clean without losing historical data                  |
-| `*`      | student                    | add notes to applications                                                                                 | remember specific details about each position or company                  |
-| `*`      | student                    | track interview rounds completed                                                                          | assess my application progress at a detailed level                        |
-| `*`      | student                    | store recruiter contact information                                                                       | easily reach out for follow-up questions or updates                       |
-| `*`      | student                    | track application sources (LinkedIn, company website, referral)                                           | know where my opportunities are coming from                               |
-| `*`      | student                    | store links to job postings                                                                               | quickly access the original application details                           |
-| `*`      | student                    | categorize applications by job type (software engineering, data science)                                  | focus on specific career paths                                            |
-| `*`      | student                    | see how many days remain until each deadline                                                              | prioritize urgent applications                                            |
-| `*`      | student                    | track when I applied to each position                                                                     | know when to follow up with companies                                     |
-| `*`      | student                    | set priority levels for applications                                                                      | focus my efforts on high-priority opportunities                           |
-| `*`      | student                    | view application status history                                                                           | track how my applications have progressed over time                       |
-| `*`      | student                    | track rejection reasons                                                                                   | learn from each experience and improve future applications                |
-| `*`      | student                    | track multiple interview stages for each application                                                      | easily identify where I am in the hiring process                          |
-| `*`      | student                    | track the number of applications submitted per time period                                                | measure my job search activity and adjust my strategy                     |
+| Priority | As a …​                    | I want to …​                                                                                              | So that I can…​                                              |
+|----------|----------------------------|-----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| `* * *`  | student                    | view the list of all my job applications                                                                  | see everything I'm tracking in one place                     |
+| `* * *`  | student                    | add job application details (company name, role, application status, deadline)                            | track multiple applications efficiently                      |
+| `* * *`  | student                    | delete a job application                                                                                  | remove entries I no longer want to track                     |
+| `* * *`  | student                    | view details of a specific job application                                                                | review all the information I've saved about that application |
+| `* *`    | student                    | update job application details                                                                            | keep my records current as my applications progress          |
+| `* *`    | student                    | sort applications by deadline                                                                             | prioritize applications that need attention first            |
+| `* *`    | student                    | sort applications by company name                                                                         | organize my applications alphabetically                      |
+| `* *`    | student                    | sort applications by status                                                                               | group applications by their current stage                    |
+| `* *`    | student                    | search for job applications by keyword                                                                    | quickly find a specific application                          |
+| `* *`    | student                    | filter applications by company name                                                                       | focus on applications from a particular employer             |
+| `* *`    | student                    | filter applications by status                                                                             | view only applications at a specific stage                   |
+| `* *`    | student                    | add custom tags to job applications                                                                       | categorize them by priority, location, or other criteria     |
+| `* *`    | student                    | remove tags from applications                                                                             | update categorization as my needs change                     |
+| `* *`    | student                    | see recently modified applications highlighted                                                            | quickly identify which applications I just updated           |
+| `* *`    | student                    | set and view application deadlines with date and time                                                     | manage my time effectively and submit applications on time   |
+| `* *`    | student                    | track application status (applied, in progress, rejected)                                                 | know the current stage of each application                   |
+| `* *`    | student with many applications | clear the application list                                                                             | start fresh when needed                                      |
+| `* *`      | new user                   | see usage instructions                                                                                    | learn how to use the app when I forget commands              |
+| `* *`      | student                    | have data automatically persisted                                                                         | save my application data after closing the app                 |
+| `*`      | student                    | export my job application data                                                                            | back up my data or share it with career counselors           |
+| `*`      | student                    | archive old or rejected applications                                                                      | keep my active list clean without losing historical data     |
+| `*`      | student                    | add notes to applications                                                                                 | remember specific details about each position or company     |
+| `*`      | student                    | track interview rounds completed                                                                          | assess my application progress at a detailed level           |
+| `*`      | student                    | store recruiter contact information                                                                       | easily reach out for follow-up questions or updates          |
+| `*`      | student                    | track application sources (LinkedIn, company website, referral)                                           | know where my opportunities are coming from                  |
+| `*`      | student                    | store links to job postings                                                                               | quickly access the original application details              |
+| `*`      | student                    | categorize applications by job type (software engineering, data science)                                  | focus on specific career paths                               |
+| `*`      | student                    | see how many days remain until each deadline                                                              | prioritize urgent applications                               |
+| `*`      | student                    | track when I applied to each position                                                                     | know when to follow up with companies                        |
+| `*`      | student                    | set priority levels for applications                                                                      | focus my efforts on high-priority opportunities              |
+| `*`      | student                    | view application status history                                                                           | track how my applications have progressed over time          |
+| `*`      | student                    | track rejection reasons                                                                                   | learn from each experience and improve future applications   |
+| `*`      | student                    | track multiple interview stages for each application                                                      | easily identify where I am in the hiring process             |
+| `*`      | student                    | track the number of applications submitted per time period                                                | measure my job search activity and adjust my strategy        |
 
 
 ### Use cases
@@ -576,9 +360,6 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
 ### UC02 - Add a job application
 
-**Preconditions**
-* User has viewed the list of applications (UC01).
-
 **MSS**
 1. User inputs job application details.
 2. System adds the job application.
@@ -590,21 +371,15 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
 * 1a. System detects invalid details.
   * 1a1. System shows an error message.
-    
+
     Use case ends.
 
 * 1b. System detects a duplicate job application.
   * 1b1. System shows an error message.
 
-  Use case ends.
-
-**Guarantees**
-* System state remains unchanged if addition fails.
+     Use case ends.
 
 ### UC03 - Delete a job application
-
-**Preconditions**
-* User has viewed the list of applications (UC01).
 
 **MSS**
 1. User requests to delete a specific application.
@@ -620,55 +395,40 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
     
     Use case ends.
 
-* 1b. The specified application does not exist.
-  * 1b1. System shows an error message.
-
-  Use case ends.
-
-**Guarantees**
-* System state remains unchanged if deletion fails.
-
 ### UC04 - Update a job application
-
-**Preconditions**
-* User has viewed the list of applications (UC01).
 
 **MSS**
 1. User requests to update specific fields of an application.
-3. System updates the application.
-4. System displays the updated application.
+2. System updates the application.
+3. System displays the updated application.
 
    Use case ends.
 
 **Extensions**
 
-* 1a. The specified application does not exist.
-  * 1a1. System shows an error message.
+* 1a. System detects an invalid index.
+    * 1a1. System shows an error message.
 
-  Use case ends.
+      Use case ends.
 
 * 1b. No fields provided to update.
   * 1b1. System shows an error message.
 
-  Use case ends.
+    Use case ends.
 
 * 1c. Updated details would create a duplicate.
   * 1c1. System shows duplicate application error message.
 
-  Use case ends.
+    Use case ends.
 
 * 1d. Invalid field format provided.
   * 1d1. System shows an error message.
 
-  Use case ends.
-
-**Guarantees**
-* Original application data is preserved if update fails.
+    Use case ends.
 
 ### UC05 - Adding tags
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -681,18 +441,24 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
 **Extensions**
 
-* 1a. System detects an invalid tag.
+* 1a. System detects an invalid index.
+    * 1a1. System shows an error message.
+
+      Use case ends.
+
+* 1b. System detects an invalid tag.
   * 1a1. System shows an error message.
     
-    Use case ends.
+      Use case ends.
 
-**Guarantees**
-* Original tags are preserved if addition fails.
+* 1c. System detects new number of tags to exceed maximum number of tags
+    * 1a1. System shows an error message.
+
+      Use case ends.
 
 ### UC06 - Removing tags
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -708,15 +474,12 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 * 1a. One or more specified tags do not exist.
   * 1a1. System shows an error message.
 
-  Use case ends.
-
-**Guarantees**
-* Original tags are preserved if removal fails.
+    Use case ends.
 
 ### UC07 - Sort job applications
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
+* User has <u>viewed the list of applications (UC01).</u>
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -724,19 +487,19 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 2. System sorts the applications.
 3. System displays the sorted list.
 
-   Use case ends.
+     Use case ends.
 
 **Extensions**
 
 * 1a. Invalid sort criterion provided.
   * 1a1. System shows an error message.
 
-  Use case ends.
+    Use case ends.
 
 ### UC08 - Filter job applications
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
+* User has <u>viewed the list of applications (UC01).</u>
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -752,12 +515,12 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 * 1a. Invalid filter criteria provided.
   * 1a1. System shows an error message.
 
-  Use case ends.
+    Use case ends.
 
 * 2a. No applications match the filter criteria.
   * 2a1. System displays empty list.
 
-  Use case continues from step 3.
+    Use case continues from step 4.
 
 **Guarantees**
 * Only applications matching the criteria are displayed.
@@ -765,7 +528,7 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
 ### UC09 - Search for job applications
 
-Similar to UC08 but we are searching via keywords instead.
+Similar to <u>UC08</u> but we are searching via keywords instead.
 
 **MSS**
 1. User provides search keywords.
@@ -780,12 +543,12 @@ Similar to UC08 but we are searching via keywords instead.
 * 1a. System detects no keywords.
   * 1a1. System displays an error message.
 
-  Use case ends.
+    Use case ends.
 
 * 2a. No applications match the search keywords.
   * 2a1. System displays empty list.
 
-  Use case continues from step 3.
+    Use case continues from step 4.
 
 **Guarantees**
 * Only applications fully matching the keywords are displayed.
@@ -795,37 +558,34 @@ Similar to UC08 but we are searching via keywords instead.
 
 **MSS**
 1. User requests help information.
-2. System displays usage instructions.
+2. System displays link to user guide.
 
    Use case ends.
 
-**Guarantees**
-* Help information is always available.
-* System state remains unchanged.
 
 ---
 
 
 ### Non-Functional Requirements
 
-1. **Platform Compatibility**: Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
+1. **Operating Systems Compatibility**: Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
 2. **Performance - Capacity**: Should be able to hold up to 1000 job applications without noticeable sluggishness in performance for typical usage.
-3. **Performance - Responsiveness**: A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most tasks faster using commands than using the mouse.
+3. **Performance - Efficiency**: A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most tasks faster using commands than using the mouse.
 4. **Performance - Response Time**: All commands should complete within 2 seconds for typical operations.
-5. **Data Integrity**: The system should enforce data integrity whereby no two job applications share the same combination of company name and role.
-6. **Usability**: The user interface should be intuitive enough for computing students familiar with CLI tools to use without extensive training.
-7. **Reliability - Data Persistence**: All modifications to job application data should be automatically saved to prevent data loss in the event of an application crash or closure.
-8. **Usability - Error Handling**: Error messages should be clear and actionable, guiding users to correct their input.
+5. **Usability**: The user interface should be intuitive enough for computing students familiar with CLI tools to use without extensive training.
+6. **Reliability - Data Persistence**: All modifications to job application data should be automatically saved to prevent data loss in the event of an application crash or closure.
+7. **Usability - Error Handling**: Error messages should be clear and actionable, guiding users to correct their input.
 
 ### Glossary
-
-* **Job Application**: A record containing company name, role, application status (APPLIED, INPROGRESS, REJECTED), deadline (date and time), and optional tags. Each application is uniquely identified by the combination of company name and role.
-* **Mainstream OS**: Windows, Linux, Unix, MacOS
-* **Tag**: A short label (1-30 characters) used to categorize job applications, containing letters, numbers, and optionally special characters. Tags are purely organizational and do not affect application uniqueness.
-* **Recently Modified Application**: The job application that was last modified by an add, update, tag, or untag operation, visually highlighted in the UI
-* **Serialization**: The process to convert complex objects (like JobApplication) into JSON format for storage
-* **Filtered List**: A subset of job applications displayed based on search, filter, or sort criteria
-* **Immutable Pattern**: A design pattern where objects cannot be modified after creation; modifications create new objects instead
+* **Application status**: A status for a job application that can be 1 of 3 values: APPLIED, INPROGRESS, REJECTED.
+* **Deadline**: A combination of a date and time.
+* **Filtered List**: A subset of job applications displayed based on search, filter, or sort criteria.
+* **Immutable Pattern**: A design pattern where objects cannot be modified after creation; modifications create new objects instead.
+* **Job Application**: A record containing company name, role, application status, deadline, and optional tags.
+* **Mainstream OS**: Windows, Linux, Unix, MacOS.
+* **Serialization**: The process to convert complex objects (like JobApplication) into JSON format for storage.
+* **JSON**: A text-based data format for storing and exchanging information in a readable format for both humans and machines.
+* **Tag**: A short label used to categorize job applications.
 * **Unique Key**: The combination of company name and role that uniquely identifies a job application. No two applications can have the same unique key.
 
 --------------------------------------------------------------------------------------------------------------------
@@ -846,7 +606,7 @@ testers are expected to do more *exploratory* testing.
    1. Download the jar file and copy into an empty folder
 
    1. Double-click the jar file or run `java -jar HustleHub.jar` from the terminal<br>
-      Expected: Shows the GUI with sample job applications. The window size may not be optimum.
+      Expected: Shows the GUI with no job applications. The window size may not be optimum.
 
 1. Saving window preferences
 
@@ -862,14 +622,14 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `add n/Google r/Software Engineer s/APPLIED d/2025-12-31T23:59`<br>
       Expected: New application is added to the list. The card is highlighted with a white-to-blue gradient. Details of the added application shown in the result display.
 
-   1. Test case: `add n/Google r/Software Engineer s/APPLIED d/2025-12-31T23:59 t/urgent t/remote`<br>
+   1. Test case: `add n/Meta r/Software Engineer s/APPLIED d/2025-12-31T23:59 t/urgent t/remote`<br>
       Expected: Similar to previous, but with tags displayed on the card.
 
    1. Test case: `add n/Google r/Software Engineer s/INVALID d/2025-12-31T23:59`<br>
       Expected: No application is added. Error message about invalid status shown.
 
-   1. Test case: `add n/Google r/Software Engineer`<br>
-      Expected: No application is added. Error message about missing required fields shown.
+   1. Test case: `add n/Tiktok r/Software Engineer`<br>
+      Expected: No application is added. Error message about invalid format shown.
 
 ### Deleting a job application
 
@@ -986,9 +746,6 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `filter s/REJECTED`<br>
       Expected: Only applications with REJECTED status shown.
 
-   1. Test case: `filter s/STALE` (if expiry feature implemented)<br>
-      Expected: Only applications with STALE status shown.
-
    1. Test case: `filter t/urgent`<br>
       Expected: Only applications tagged with "urgent" shown.
 
@@ -1032,7 +789,7 @@ testers are expected to do more *exploratory* testing.
 1. Accessing help information
 
    1. Test case: `help`<br>
-      Expected: Help window opens showing command usage instructions. Link to user guide displayed.
+      Expected: Help window displays ink to user guide.
 
    1. Test case: Execute `help` when help window already open<br>
       Expected: Help window gains focus (brought to front).

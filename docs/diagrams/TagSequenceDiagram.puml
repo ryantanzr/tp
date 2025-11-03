@@ -1,0 +1,97 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+skinparam arrowThickness 1.2
+
+title Sequence Diagram for TagJobCommand Execution
+
+' =======================
+' Logic Layer
+' =======================
+box Tag Command LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+
+participant "t:TagJobCommand" as TagJobCommand LOGIC_COLOR
+participant ":CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+' =======================
+' Model Layer
+' =======================
+box Model MODEL_COLOR_T1
+participant "model:ModelManager" as Model MODEL_COLOR
+participant "jobToTag:JobApplication" as JobToTag MODEL_COLOR
+participant "taggedJob:JobApplication" as TaggedJob MODEL_COLOR
+end box
+
+
+' =======================
+' Command execution
+' =======================
+LogicManager -> TagJobCommand : execute(model)
+activate TagJobCommand
+
+TagJobCommand -> Model : getFilteredApplicationList()
+activate Model
+
+Model --> TagJobCommand : filteredList
+deactivate Model
+
+alt is index invalid
+
+    TagJobCommand --> LogicManager : new JobCommandException()
+
+else valid
+
+    TagJobCommand -> TagJobCommand : get(index)
+    activate TagJobCommand
+    TagJobCommand --> TagJobCommand : jobToTag
+    deactivate TagJobCommand
+
+    TagJobCommand -> JobToTag : hasCapacityForNewTags(tags)
+    activate JobToTag
+
+    alt exceeds tag capacity
+        JobToTag --> TagJobCommand : false
+        TagJobCommand --> LogicManager : new JobCommandException()
+     else has capacity
+
+        JobToTag --> TagJobCommand : true
+        deactivate JobToTag
+
+        TagJobCommand -> TagJobCommand : createTaggedJob(jobToTag, tags)
+        activate TagJobCommand
+
+        create TaggedJob
+        TagJobCommand -> TaggedJob
+        activate TaggedJob
+
+        TaggedJob --> TagJobCommand
+        deactivate TaggedJob
+
+        TagJobCommand --> TagJobCommand : taggedJob
+        deactivate TagJobCommand
+
+        TagJobCommand -> Model : setJobApplication(jobToTag, taggedJob)
+        activate Model
+
+        Model --> TagJobCommand
+        deactivate Model
+
+        create CommandResult
+        TagJobCommand -> CommandResult
+        activate CommandResult
+
+        CommandResult --> TagJobCommand : r
+        deactivate CommandResult
+
+        TagJobCommand --> LogicManager : r
+        deactivate TagJobCommand
+
+        [<-- LogicManager : r
+        deactivate LogicManager
+        end
+
+end
+
+@enduml

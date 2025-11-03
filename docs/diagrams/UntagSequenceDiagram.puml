@@ -1,0 +1,94 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+skinparam arrowThickness 1.2
+
+title Sequence Diagram for UntagJobCommand Execution
+
+' =======================
+' Logic Layer
+' =======================
+box Untag Command LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant "ut:UntagJobCommand" as UntagJobCommand LOGIC_COLOR
+participant ":CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+' =======================
+' Model Layer
+' =======================
+box Model MODEL_COLOR_T1
+participant "model:ModelManager" as Model MODEL_COLOR
+participant "jobToUntag:JobApplication" as JobToUntag MODEL_COLOR
+participant "untaggedJob:JobApplication" as UntaggedJob MODEL_COLOR
+end box
+
+
+' =======================
+' Command execution
+' =======================
+LogicManager -> UntagJobCommand : execute(model)
+activate UntagJobCommand
+
+UntagJobCommand -> Model : getFilteredApplicationList()
+activate Model
+
+Model --> UntagJobCommand : filteredList
+deactivate Model
+
+alt is index invalid
+    UntagJobCommand --> LogicManager : new JobCommandException()
+else valid
+    UntagJobCommand -> UntagJobCommand : get(index)
+    activate UntagJobCommand
+    UntagJobCommand --> UntagJobCommand : jobToUntag
+    deactivate UntagJobCommand
+
+    UntagJobCommand -> JobToUntag : canRemoveProvidedTags(tagsToRemove)
+    activate JobToUntag
+
+    alt tags do not exist
+        JobToUntag --> UntagJobCommand : false
+        UntagJobCommand --> LogicManager : new JobCommandException()
+    else tags exist
+        JobToUntag --> UntagJobCommand : true
+        deactivate JobToUntag
+
+        UntagJobCommand -> UntagJobCommand : createUntaggedJob(jobToUntag, tagsToRemove)
+        activate UntagJobCommand
+
+        create UntaggedJob
+        UntagJobCommand -> UntaggedJob :
+        activate UntaggedJob
+
+        UntaggedJob --> UntagJobCommand
+        deactivate UntaggedJob
+
+        UntagJobCommand --> UntagJobCommand : untaggedJob
+        deactivate UntagJobCommand
+
+        UntagJobCommand -> Model : setRecentlyModifiedApplication(jobToUntag)
+        activate Model
+        Model --> UntagJobCommand
+        deactivate Model
+
+        UntagJobCommand -> Model : setJobApplication(jobToUntag, untaggedJob)
+        activate Model
+        Model --> UntagJobCommand
+        deactivate Model
+
+        create CommandResult
+        UntagJobCommand -> CommandResult
+        activate CommandResult
+
+        CommandResult --> UntagJobCommand : r
+        deactivate CommandResult
+
+        UntagJobCommand --> LogicManager : r
+    end
+end
+
+deactivate UntagJobCommand
+
+[<-- LogicManager : r
+@enduml
