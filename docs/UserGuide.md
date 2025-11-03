@@ -446,6 +446,7 @@ Format: `delete INDEX`
 * Deletes the application at the specified `INDEX`.
 * The index refers to the index number shown in the displayed application list.
 * The index **must be a positive integer** 1, 2, 3, …​
+* Only the index is allowed; any extra parameters will result in an invalid command format error.
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd application in HustleHub.
