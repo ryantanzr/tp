@@ -523,42 +523,42 @@ HustleHub empowers computing students to **efficiently manage their job applicat
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                    | I want to …​                                                                                              | So that I can…​                                                           |
-|----------|----------------------------|-----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `* * *`  | student                    | view the list of all my job applications                                                                  | see everything I'm tracking in one place                                  |
-| `* * *`  | student                    | add job application details (company name, role, application status, deadline)                            | track multiple applications efficiently                                   |
-| `* * *`  | student                    | delete a job application                                                                                  | remove entries I no longer want to track                                  |
-| `* * *`  | student                    | view details of a specific job application                                                                | review all the information I've saved about that application              |
-| `* *`    | student                    | update job application details                                                                            | keep my records current as my applications progress                       |
-| `* *`    | student                    | sort applications by deadline                                                                             | prioritize applications that need attention first                         |
-| `* *`    | student                    | sort applications by company name                                                                         | organize my applications alphabetically                                   |
-| `* *`    | student                    | sort applications by status                                                                               | group applications by their current stage                                 |
-| `* *`    | student                    | search for job applications by keyword                                                                    | quickly find a specific application                                       |
-| `* *`    | student                    | filter applications by company name                                                                       | focus on applications from a particular employer                          |
-| `* *`    | student                    | filter applications by status                                                                             | view only applications at a specific stage                                |
-| `* *`    | student                    | add custom tags to job applications                                                                       | categorize them by priority, location, or other criteria                  |
-| `* *`    | student                    | remove tags from applications                                                                             | update categorization as my needs change                                  |
-| `* *`    | student                    | see recently modified applications highlighted                                                            | quickly identify which applications I just updated                        |
-| `* *`    | student                    | set and view application deadlines with date and time                                                     | manage my time effectively and submit applications on time                |
-| `* *`    | student                    | track application status (applied, in progress, rejected)                                                 | know the current stage of each application                                |
-| `* *`    | student with many applications | clear the application list                                                                             | start fresh when needed                                                   |
-| `* *`      | new user                   | see usage instructions                                                                                    | learn how to use the app when I forget commands                           |
-| `* *`      | student                    | have data automatically persisted                                                                         | recover my application data after closing the app                         |
-| `*`      | student                    | export my job application data                                                                            | back up my data or share it with career counselors                        |
-| `*`      | student                    | archive old or rejected applications                                                                      | keep my active list clean without losing historical data                  |
-| `*`      | student                    | add notes to applications                                                                                 | remember specific details about each position or company                  |
-| `*`      | student                    | track interview rounds completed                                                                          | assess my application progress at a detailed level                        |
-| `*`      | student                    | store recruiter contact information                                                                       | easily reach out for follow-up questions or updates                       |
-| `*`      | student                    | track application sources (LinkedIn, company website, referral)                                           | know where my opportunities are coming from                               |
-| `*`      | student                    | store links to job postings                                                                               | quickly access the original application details                           |
-| `*`      | student                    | categorize applications by job type (software engineering, data science)                                  | focus on specific career paths                                            |
-| `*`      | student                    | see how many days remain until each deadline                                                              | prioritize urgent applications                                            |
-| `*`      | student                    | track when I applied to each position                                                                     | know when to follow up with companies                                     |
-| `*`      | student                    | set priority levels for applications                                                                      | focus my efforts on high-priority opportunities                           |
-| `*`      | student                    | view application status history                                                                           | track how my applications have progressed over time                       |
-| `*`      | student                    | track rejection reasons                                                                                   | learn from each experience and improve future applications                |
-| `*`      | student                    | track multiple interview stages for each application                                                      | easily identify where I am in the hiring process                          |
-| `*`      | student                    | track the number of applications submitted per time period                                                | measure my job search activity and adjust my strategy                     |
+| Priority | As a …​                    | I want to …​                                                                                              | So that I can…​                                              |
+|----------|----------------------------|-----------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| `* * *`  | student                    | view the list of all my job applications                                                                  | see everything I'm tracking in one place                     |
+| `* * *`  | student                    | add job application details (company name, role, application status, deadline)                            | track multiple applications efficiently                      |
+| `* * *`  | student                    | delete a job application                                                                                  | remove entries I no longer want to track                     |
+| `* * *`  | student                    | view details of a specific job application                                                                | review all the information I've saved about that application |
+| `* *`    | student                    | update job application details                                                                            | keep my records current as my applications progress          |
+| `* *`    | student                    | sort applications by deadline                                                                             | prioritize applications that need attention first            |
+| `* *`    | student                    | sort applications by company name                                                                         | organize my applications alphabetically                      |
+| `* *`    | student                    | sort applications by status                                                                               | group applications by their current stage                    |
+| `* *`    | student                    | search for job applications by keyword                                                                    | quickly find a specific application                          |
+| `* *`    | student                    | filter applications by company name                                                                       | focus on applications from a particular employer             |
+| `* *`    | student                    | filter applications by status                                                                             | view only applications at a specific stage                   |
+| `* *`    | student                    | add custom tags to job applications                                                                       | categorize them by priority, location, or other criteria     |
+| `* *`    | student                    | remove tags from applications                                                                             | update categorization as my needs change                     |
+| `* *`    | student                    | see recently modified applications highlighted                                                            | quickly identify which applications I just updated           |
+| `* *`    | student                    | set and view application deadlines with date and time                                                     | manage my time effectively and submit applications on time   |
+| `* *`    | student                    | track application status (applied, in progress, rejected)                                                 | know the current stage of each application                   |
+| `* *`    | student with many applications | clear the application list                                                                             | start fresh when needed                                      |
+| `* *`      | new user                   | see usage instructions                                                                                    | learn how to use the app when I forget commands              |
+| `* *`      | student                    | have data automatically persisted                                                                         | save my application data after closing the app                 |
+| `*`      | student                    | export my job application data                                                                            | back up my data or share it with career counselors           |
+| `*`      | student                    | archive old or rejected applications                                                                      | keep my active list clean without losing historical data     |
+| `*`      | student                    | add notes to applications                                                                                 | remember specific details about each position or company     |
+| `*`      | student                    | track interview rounds completed                                                                          | assess my application progress at a detailed level           |
+| `*`      | student                    | store recruiter contact information                                                                       | easily reach out for follow-up questions or updates          |
+| `*`      | student                    | track application sources (LinkedIn, company website, referral)                                           | know where my opportunities are coming from                  |
+| `*`      | student                    | store links to job postings                                                                               | quickly access the original application details              |
+| `*`      | student                    | categorize applications by job type (software engineering, data science)                                  | focus on specific career paths                               |
+| `*`      | student                    | see how many days remain until each deadline                                                              | prioritize urgent applications                               |
+| `*`      | student                    | track when I applied to each position                                                                     | know when to follow up with companies                        |
+| `*`      | student                    | set priority levels for applications                                                                      | focus my efforts on high-priority opportunities              |
+| `*`      | student                    | view application status history                                                                           | track how my applications have progressed over time          |
+| `*`      | student                    | track rejection reasons                                                                                   | learn from each experience and improve future applications   |
+| `*`      | student                    | track multiple interview stages for each application                                                      | easily identify where I am in the hiring process             |
+| `*`      | student                    | track the number of applications submitted per time period                                                | measure my job search activity and adjust my strategy        |
 
 
 ### Use cases
@@ -575,9 +575,6 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
    Use case ends.
 
 ### UC02 - Add a job application
-
-**Preconditions**
-* User has viewed the list of applications (UC01).
 
 **MSS**
 1. User inputs job application details.
@@ -598,13 +595,7 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
   Use case ends.
 
-**Guarantees**
-* System state remains unchanged if addition fails.
-
 ### UC03 - Delete a job application
-
-**Preconditions**
-* User has viewed the list of applications (UC01).
 
 **MSS**
 1. User requests to delete a specific application.
@@ -620,32 +611,21 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
     
     Use case ends.
 
-* 1b. The specified application does not exist.
-  * 1b1. System shows an error message.
-
-  Use case ends.
-
-**Guarantees**
-* System state remains unchanged if deletion fails.
-
 ### UC04 - Update a job application
-
-**Preconditions**
-* User has viewed the list of applications (UC01).
 
 **MSS**
 1. User requests to update specific fields of an application.
-3. System updates the application.
-4. System displays the updated application.
+2. System updates the application.
+3. System displays the updated application.
 
    Use case ends.
 
 **Extensions**
 
-* 1a. The specified application does not exist.
-  * 1a1. System shows an error message.
+* 1a. System detects an invalid index.
+    * 1a1. System shows an error message.
 
-  Use case ends.
+      Use case ends.
 
 * 1b. No fields provided to update.
   * 1b1. System shows an error message.
@@ -668,7 +648,6 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 ### UC05 - Adding tags
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -681,18 +660,24 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
 **Extensions**
 
+* 1a. System detects an invalid index.
+    * 1a1. System shows an error message.
+
+      Use case ends.
+
 * 1a. System detects an invalid tag.
   * 1a1. System shows an error message.
     
     Use case ends.
 
-**Guarantees**
-* Original tags are preserved if addition fails.
+* 1a. System detects new number of tags to exceed maximum number of tags
+    * 1a1. System shows an error message.
+
+      Use case ends.
 
 ### UC06 - Removing tags
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -710,13 +695,10 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
   Use case ends.
 
-**Guarantees**
-* Original tags are preserved if removal fails.
-
 ### UC07 - Sort job applications
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
+* User has <u>viewed the list of applications (UC01).</u>
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -736,7 +718,7 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 ### UC08 - Filter job applications
 
 **Preconditions**
-* User has viewed the list of applications (UC01).
+* User has <u>viewed the list of applications (UC01).</u>
 * There is minimally one job application in HustleHub.
 
 **MSS**
@@ -757,7 +739,7 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 * 2a. No applications match the filter criteria.
   * 2a1. System displays empty list.
 
-  Use case continues from step 3.
+  Use case continues from step 4.
 
 **Guarantees**
 * Only applications matching the criteria are displayed.
@@ -765,7 +747,7 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
 ### UC09 - Search for job applications
 
-Similar to UC08 but we are searching via keywords instead.
+Similar to <u>UC08</u> but we are searching via keywords instead.
 
 **MSS**
 1. User provides search keywords.
@@ -785,7 +767,7 @@ Similar to UC08 but we are searching via keywords instead.
 * 2a. No applications match the search keywords.
   * 2a1. System displays empty list.
 
-  Use case continues from step 3.
+  Use case continues from step 4.
 
 **Guarantees**
 * Only applications fully matching the keywords are displayed.
@@ -795,12 +777,11 @@ Similar to UC08 but we are searching via keywords instead.
 
 **MSS**
 1. User requests help information.
-2. System displays usage instructions.
+2. System displays link to user guide.
 
    Use case ends.
 
 **Guarantees**
-* Help information is always available.
 * System state remains unchanged.
 
 ---
