@@ -374,7 +374,6 @@ Shows a message explaining how to access the help page.
 
 Format: `help`
 
-Result for `help`:
 ![help message](images/helpMessage.png)
 
 <br>
@@ -391,8 +390,10 @@ Format: `list`
 `list` and `filter none` have the same effect - both show all applications.
 </div>
 
-<br>
 ![list command](images/list.png)
+
+<br>
+
 
 [<u>Back to Command Summary</u>](#command-summary)
 
@@ -434,8 +435,9 @@ Examples:
 * `add n/Meta r/Frontend Developer s/APPLIED d/2025-11-30T14:00` - Full date-time format
 * `add n/Netflix r/Backend Engineer s/APPLIED d/15 December t/remote t/urgent` - With tags
 
-<br>
 ![add command](images/add.png)
+<br>
+
 
 [<u>Back to Command Summary</u>](#command-summary)
 
@@ -500,9 +502,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
     * Role contains "backend" (e.g., "Backend Developer"), OR
     * Both
 
-Before: `find morgan engineer`
-
-After: Returns all applications where company contains "morgan" OR role contains "engineer"
+`find engineer backend` returns all applications where company OR role contains either "backend" OR "engineer"
 
 ![find command](images/find-command.png)
 
@@ -549,12 +549,6 @@ or, to remove all filters: `filter none`
 * `filter none`
     * Removes all current filters and shows the complete list of job applications.
 
-Before: `filter s/inprogress`
-
-![result for 'filter s/inprogress'](images/filterInProgressCommand.png)
-      
-After filtering: `INPROGRESS`
-
 ![result for 'filter s/inprogress'](images/filterInProgressResult.png)
 
 <br>
@@ -578,7 +572,6 @@ Sorts the current list of applications by a chosen field, in ascending or descen
 - `sort company desc`
 - `sort role ascending`
 
-After:
 ![sort_after.png](images/sort_after.png)
 
 <br>
@@ -615,8 +608,6 @@ Format: `update INDEX [n/COMPANY_NAME] [r/ROLE] [s/STATUS] [d/DEADLINE] [t/TAG]â
 * `update 4 d/2027-01-15T14:00` - Updates deadline with specific time.
 * `update 1 t/` - Removes all tags from the 1st application.
 
-
-After updating with `update 2 s/INPROGRESS d/2027-01-15T17:00 t/priority t/urgent`:
 
 ![update_after.png](images/update_after.png)
 
@@ -671,7 +662,6 @@ If you add a mix of duplicate and new tags, the new tags will be added whilst du
 - `tag 1 t/fast-response t/rolling`
 - `tag 6 t/late-deadline t/backup-plan`
 
-After tagging:
 
 ![tag_after.png](images/tag_after.png)
 
@@ -704,8 +694,6 @@ Examples:
 - `untag 1 t/SQL`
 - `untag 2 t/6-Month t/C++`
 - `untag 3 t/python_v3.12 t/BlockChain t/Full-Stack`
-
-After untagging:
 
 ![Untag_after.png](images/Untag_after.png)
 
