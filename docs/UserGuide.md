@@ -59,6 +59,16 @@ HustleHub combines CLI speed with visual overview, letting you update 5 applicat
 
 --------------------------------------------------------------------------------------------------------------------
 
+## Supported Languages
+
+**Currently, HustleHub only supports the English language.** All commands, statuses, tags, and interactions should be conducted in English.
+
+**Important:** 
+- The **CLI** commands, such as `add`, `update`, `delete`, `sort`, and `filter`, as well as all statuses (e.g., `APPLIED`, `INPROGRESS`, `REJECTED`), and tags (e.g., `t/urgent`, `t/remote`) must be entered in **English**.
+- Commands are **case-sensitive**, and they must be spelled in English.
+
+--------------------------------------------------------------------------------------------------------------------
+
 ## Understanding HustleHub
 
 Before diving into commands, let's understand the core concepts of HustleHub.
