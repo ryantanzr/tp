@@ -371,13 +371,13 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
 * 1a. System detects invalid details.
   * 1a1. System shows an error message.
-    
+
     Use case ends.
 
 * 1b. System detects a duplicate job application.
   * 1b1. System shows an error message.
 
-  Use case ends.
+     Use case ends.
 
 ### UC03 - Delete a job application
 
@@ -414,20 +414,17 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 * 1b. No fields provided to update.
   * 1b1. System shows an error message.
 
-  Use case ends.
+    Use case ends.
 
 * 1c. Updated details would create a duplicate.
   * 1c1. System shows duplicate application error message.
 
-  Use case ends.
+    Use case ends.
 
 * 1d. Invalid field format provided.
   * 1d1. System shows an error message.
 
-  Use case ends.
-
-**Guarantees**
-* Original application data is preserved if update fails.
+    Use case ends.
 
 ### UC05 - Adding tags
 
@@ -449,12 +446,12 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 
       Use case ends.
 
-* 1a. System detects an invalid tag.
+* 1b. System detects an invalid tag.
   * 1a1. System shows an error message.
     
-    Use case ends.
+      Use case ends.
 
-* 1a. System detects new number of tags to exceed maximum number of tags
+* 1c. System detects new number of tags to exceed maximum number of tags
     * 1a1. System shows an error message.
 
       Use case ends.
@@ -477,7 +474,7 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 * 1a. One or more specified tags do not exist.
   * 1a1. System shows an error message.
 
-  Use case ends.
+    Use case ends.
 
 ### UC07 - Sort job applications
 
@@ -490,14 +487,14 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 2. System sorts the applications.
 3. System displays the sorted list.
 
-   Use case ends.
+     Use case ends.
 
 **Extensions**
 
 * 1a. Invalid sort criterion provided.
   * 1a1. System shows an error message.
 
-  Use case ends.
+    Use case ends.
 
 ### UC08 - Filter job applications
 
@@ -518,12 +515,12 @@ _For all use cases below, the **System** is `HustleHub` and the **Actor** is the
 * 1a. Invalid filter criteria provided.
   * 1a1. System shows an error message.
 
-  Use case ends.
+    Use case ends.
 
 * 2a. No applications match the filter criteria.
   * 2a1. System displays empty list.
 
-  Use case continues from step 4.
+    Use case continues from step 4.
 
 **Guarantees**
 * Only applications matching the criteria are displayed.
@@ -546,12 +543,12 @@ Similar to <u>UC08</u> but we are searching via keywords instead.
 * 1a. System detects no keywords.
   * 1a1. System displays an error message.
 
-  Use case ends.
+    Use case ends.
 
 * 2a. No applications match the search keywords.
   * 2a1. System displays empty list.
 
-  Use case continues from step 4.
+    Use case continues from step 4.
 
 **Guarantees**
 * Only applications fully matching the keywords are displayed.
@@ -565,8 +562,6 @@ Similar to <u>UC08</u> but we are searching via keywords instead.
 
    Use case ends.
 
-**Guarantees**
-* System state remains unchanged.
 
 ---
 
