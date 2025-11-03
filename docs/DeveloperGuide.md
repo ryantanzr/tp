@@ -789,24 +789,24 @@ Similar to <u>UC08</u> but we are searching via keywords instead.
 
 ### Non-Functional Requirements
 
-1. **Platform Compatibility**: Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
+1. **Operating Systems Compatibility**: Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
 2. **Performance - Capacity**: Should be able to hold up to 1000 job applications without noticeable sluggishness in performance for typical usage.
-3. **Performance - Responsiveness**: A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most tasks faster using commands than using the mouse.
+3. **Performance - Efficiency**: A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most tasks faster using commands than using the mouse.
 4. **Performance - Response Time**: All commands should complete within 2 seconds for typical operations.
-5. **Data Integrity**: The system should enforce data integrity whereby no two job applications share the same combination of company name and role.
-6. **Usability**: The user interface should be intuitive enough for computing students familiar with CLI tools to use without extensive training.
-7. **Reliability - Data Persistence**: All modifications to job application data should be automatically saved to prevent data loss in the event of an application crash or closure.
-8. **Usability - Error Handling**: Error messages should be clear and actionable, guiding users to correct their input.
+5. **Usability**: The user interface should be intuitive enough for computing students familiar with CLI tools to use without extensive training.
+6. **Reliability - Data Persistence**: All modifications to job application data should be automatically saved to prevent data loss in the event of an application crash or closure.
+7. **Usability - Error Handling**: Error messages should be clear and actionable, guiding users to correct their input.
 
 ### Glossary
-
-* **Job Application**: A record containing company name, role, application status (APPLIED, INPROGRESS, REJECTED), deadline (date and time), and optional tags. Each application is uniquely identified by the combination of company name and role.
-* **Mainstream OS**: Windows, Linux, Unix, MacOS
-* **Tag**: A short label (1-30 characters) used to categorize job applications, containing letters, numbers, and optionally special characters. Tags are purely organizational and do not affect application uniqueness.
-* **Recently Modified Application**: The job application that was last modified by an add, update, tag, or untag operation, visually highlighted in the UI
-* **Serialization**: The process to convert complex objects (like JobApplication) into JSON format for storage
-* **Filtered List**: A subset of job applications displayed based on search, filter, or sort criteria
-* **Immutable Pattern**: A design pattern where objects cannot be modified after creation; modifications create new objects instead
+* **Application status**: A status for a job application that can be 1 of 3 values: APPLIED, INPROGRESS, REJECTED.
+* **Deadline**: A combination of a date and time.
+* **Filtered List**: A subset of job applications displayed based on search, filter, or sort criteria.
+* **Immutable Pattern**: A design pattern where objects cannot be modified after creation; modifications create new objects instead.
+* **Job Application**: A record containing company name, role, application status, deadline, and optional tags.
+* **Mainstream OS**: Windows, Linux, Unix, MacOS.
+* **Serialization**: The process to convert complex objects (like JobApplication) into JSON format for storage.
+* **JSON**: A text-based data format for storing and exchanging information in a readable format for both humans and machines.
+* **Tag**: A short label used to categorize job applications.
 * **Unique Key**: The combination of company name and role that uniquely identifies a job application. No two applications can have the same unique key.
 
 --------------------------------------------------------------------------------------------------------------------
