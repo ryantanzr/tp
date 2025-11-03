@@ -73,8 +73,7 @@ public class MainApp extends Application {
 
     /**
      * Returns a {@code ModelManager} with the data from {@code storage}'s job book and {@code userPrefs}. <br>
-     * The data from the sample address book will be used instead if {@code storage}'s job book is not found,
-     * or an empty job book will be used instead if errors occur when reading {@code storage}'s job book.
+     * An empty job book will be used instead if errors occur when reading {@code storage}'s job book.
      */
     private Model initModelManager(DataStorage storage, ReadOnlyUserPrefs userPrefs) {
         logger.info("Using data file : " + storage.getDataFilePath());
