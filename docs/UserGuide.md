@@ -381,11 +381,7 @@ HustleHub data is automatically saved after any command that changes the data. T
 HustleHub data is saved automatically as a JSON file `[JAR file location]/data/JobApplications.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes to the data file make its format invalid, HustleHub will discard all data and start with an empty data file at the next run. Hence, it is recommended to take a backup of the file before editing it.
-
-<br>
-
-Furthermore, certain edits can cause HustleHub to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If your changes to the data file make its format invalid, HustleHub will discard all data and start with an empty data file at the next run. Hence, it is recommended to take a backup of the file before editing it. Furthermore, certain edits can cause HustleHub to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
 ---
@@ -403,7 +399,7 @@ Format: `add n/COMPANY_NAME r/ROLE s/STATUS [d/DEADLINE] [t/TAG]…​`
 2. An application can have up to 3 tags.
 3. Deadline cannot be in the past. Please provide a future date (supports flexible formats - see Date & Time Formats section).
 
-<div markdown="span" class="alert alert-primary">
+<div markdown="block" class="alert alert-info">
 :bulb: **Tips:** <br>
 
 * The deadline (`d/`) is **optional**. If omitted, it defaults to today at 23:59.
@@ -543,16 +539,7 @@ Format: `update INDEX [n/COMPANY_NAME] [r/ROLE] [s/STATUS] [d/DEADLINE] [t/TAG]�
 4. At least one of the optional fields must be provided.
 5. Existing values will be overwritten by the input values.
 6. When updating tags with `t/TAG`, all existing tags will be replaced by the new tags specified.
-
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-
-* Deadline cannot be in the past. Please provide a future date (supports flexible formats - see Date & Time Formats section).
-
-* Updating company name and/or role may result in duplicate applications if the combination already exists.
-
-* Valid status values are: `APPLIED`, `INPROGRESS`, or `REJECTED` (case-insensitive).
-
-</div>
+7. Deadline cannot be in the past.
 
 <br>
 
