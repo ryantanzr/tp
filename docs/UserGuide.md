@@ -170,7 +170,7 @@ Understanding the difference between these three operations:
 
 Now that you understand the core concepts, here are practical scenarios showing how to combine commands effectively.
 
-### Scenario 1: Weekly Deadline Check
+#### Scenario 1: Weekly Deadline Check
 **Goal:** Review upcoming deadlines and prioritize urgent applications
 
 1. `sort deadline` — See applications by earliest deadline
@@ -329,39 +329,6 @@ Full list (10 apps):          After filter s/REJECTED:     After delete 1:
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 
-**Date & Time Formats in HustleHub**
-
-HustleHub now supports **flexible date formats** to make adding applications faster and easier!
-
-*When adding/updating applications, you can use any of these formats:*
-
-**Full Date-Time Formats** (if you need a specific time):
-- `yyyy-MM-ddTHH:mm` → `2025-12-31T23:59`
-- `yyyy-MM-dd HH:mm` → `2025-12-31 23:59`
-
-**Date-Only Formats** (defaults to 23:59):
-- `yyyy-MM-dd` → `2025-12-31` (defaults to 23:59)
-- `MM-dd` → `12-31` (infers current or next year, defaults to 23:59)
-- `dd MMM` → `31 Dec` (infers year, defaults to 23:59)
-- `dd MMMM` → `31 December` (infers year, defaults to 23:59)
-- `dd-MMM` → `31-Dec` (infers year, defaults to 23:59)
-
-**No Deadline Specified**:
-- Simply omit the `d/` flag entirely, and the deadline defaults to **today at 23:59**
-
-*When filtering by deadline:*
-- Format: `yyyy-MM-dd` (time not needed)
-- Example: `2025-12-31`
-- Matches all applications due on that date regardless of time
-
-*Smart Year Inference:*
-- When you use formats like `12-31` or `31 Dec` without specifying the year:
-  - If the date would be in the past, HustleHub automatically uses **next year**
-  - Otherwise, it uses the **current year**
-
-*Rules:*
-- Must be a future date (no past deadlines)
-- Time component uses 24-hour format when specified
 </div>
 
 --------------------------------------------------------------------------------------------------------------------
@@ -430,15 +397,21 @@ Adds a job application to HustleHub.
 
 Format: `add n/COMPANY_NAME r/ROLE s/STATUS [d/DEADLINE] [t/TAG]…​`
 
-<div markdown="span" class="alert alert-primary">:bulb: **Tips:**
+#### **Rules**
+1. No job applications can have the same combination of role and company name.
+2. An application can have up to 3 tags.
+3. Deadline cannot be in the past. Please provide a future date (supports flexible formats - see Date & Time Formats section).
+
+<div markdown="span" class="alert alert-primary">
+:bulb: **Tips:** <br>
 
 * The deadline (`d/`) is **optional**. If omitted, it defaults to today at 23:59.
 * You can use **flexible date formats** for the deadline - see the Date & Time Formats section above for all supported formats.
-* An application can have up to 3 tags.
 * New applications appear at the **top** of your list for easy visibility.
+
 </div>
 
-Examples:
+#### **Examples**
 * `add n/Google r/Software Engineer s/APPLIED` - No deadline specified, defaults to today
 * `add n/Microsoft r/Cloud Engineer s/INPROGRESS d/31 Oct` - Short date format
 * `add n/Amazon r/Data Scientist s/APPLIED d/12-25` - Month-day format
@@ -457,12 +430,12 @@ Deletes the specified application from HustleHub.
 
 Format: `delete INDEX`
 
-* Deletes the application at the specified `INDEX`.
-* The index refers to the index number shown in the displayed application list.
-* The index **must be a positive integer** 1, 2, 3, …​
-* Only the index is allowed; any extra parameters will result in an invalid command format error.
+#### **Rules**
+1. Deletes the application at the specified `INDEX`.
+2. The index refers to the index number shown in the displayed application list.
+3. The index **must be a positive number** 1, 2, 3, …​
 
-Examples:
+#### **Examples**
 * `list` followed by `delete 2` deletes the 2nd application in HustleHub.
 * After filtering the list, `delete 1` deletes the 1st application in the currently displayed results.
 
@@ -476,42 +449,17 @@ Finds job applications whose **Company Name** or **Role** matches any of the giv
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
-#### **Find Rules**
+#### **Rules**
 
-1. **Search Scope**: Searches both **Company Name** and **Role** fields.
-   * An application is returned if either field contains at least one keyword.
-
-2. **Case-Insensitive**: The search is case-insensitive.
-   * `tiktok` matches "TikTok", "TikTok Inc", or "TikTok Singapore".
-
-3. **Partial Matching**: Keywords match partial words.
-   * `engineer` matches "Software Engineer", "Engineering Manager".
-
-4. **Keyword Order**: The order of keywords does not matter.
-   * `American Airlines` matches "Airlines American".
-
-5. **OR Search**: Applications matching **at least one keyword** in **either field** are returned.
-   * `find Morgan engineer` returns applications where:
-     * Company contains "Morgan" (e.g., "J.P. Morgan"), OR
-     * Role contains "engineer" (e.g., "Software Engineer"), OR
-     * Both
+1. Searches using only **Company Name** and **Role**, Returning applications containing at least one keyword.
+2. The search is case-insensitive.
+3. Keywords allows partial matching.
 
 #### **Examples**
 
-* `find morgan`
-  * Returns applications with company "Morgan Stanley" or "J.P. Morgan Chase".
-
-* `find engineer`
-  * Returns applications with roles like "Software Engineer", "Data Engineer", "Engineering Intern".
-
-* `find Tiger America`
-  * Returns "Tiger Management" (company), "Bank of America" (company), or any role containing "Tiger" or "America".
-
-* `find backend google`
-  * Returns applications where:
-    * Company contains "Google", OR
-    * Role contains "backend" (e.g., "Backend Developer"), OR
-    * Both
+* `find morgan` - Finds job applications containing `morgan` in company name or role.
+* `find engineer` - Returns applications with roles like "Software Engineer", "Data Engineer".
+* `find Tiger Analyst` - Returns company names such as `Tiger Management`, and/or any role containing `Analyst`.
 
 `find engineer backend` returns all applications where company OR role contains either "backend" OR "engineer"
 
@@ -520,46 +468,23 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 ### Filtering Job Applications: `filter`
 
 Filters the list of job applications based on a single field: **Tags**, **Status**, or **Application Deadline**.
-* Filter command accepts only one filter flag at a time.
 
-Format: `filter FLAG/KEYWORD`
+Format: `filter FLAG/KEYWORD` or, to remove all filters: `filter none`
 
-or, to remove all filters: `filter none` (`filter none` accepts extraneous parameters which will be ignored)
+#### **Rules**
 
-
-#### **Filtering Rules**
-
-
-1. **Tags (`t/`)**: Matches if the `KEYWORD` is **contained** in any tag
-   (e.g., `t/backend` matches a tag named "backend-engineer").
-    * The search is **case-insensitive**.
-    * Empty tags are considered as invalid inputs.
-
-
-2. **Application Status (`s/`)**: Matches an exact, **case-insensitive** status.
-    * Valid keywords are: **APPLIED**, **INPROGRESS**, or **REJECTED**.
-
-
-3. **Application Deadline (`d/`)**: Matches the exact date only, ignoring the time component.
+1. Does **case-insensitive matches** with the `KEYWORD` is **contained** in any tag - (`t/`)
+2. Matches an exact, **case-insensitive** application status - (`s/`)
+3. Matches the exact date only, ignoring the time component - (`d/`)
     * The date must be in the **`yyyy-MM-dd`** format (e.g., `2025-12-31`).
     * Matches all applications due on that date regardless of time
+4. Filter command accepts only one filter flag at a time.
 
 #### **Examples**
-
-* `filter t/backend`
-    * Returns applications with tags containing "backend" (e.g., "backend", "backend-dev").
-
-
-* `filter s/applied`
-    * Returns applications with the status "APPLIED".
-
-
-* `filter d/2025-10-20`
-    * Returns applications with an application deadline on October 20, 2025.
-
-
-* `filter none`
-    * Removes all current filters and shows the complete list of job applications.
+* `filter t/backend` - Returns applications with tags containing "backend" (e.g., "backend", "backend-dev").
+* `filter s/applied` - Returns applications with the status "APPLIED".
+* `filter d/2025-10-20` - Returns applications with an application deadline on October 20, 2025.
+* `filter none` - Removes all current filters and shows the complete list of job applications.
 
 ![result for 'filter s/inprogress'](images/filterInProgressResult.png)
 
@@ -575,14 +500,14 @@ Sorts the current list of applications by a chosen field, in ascending or descen
 - **FIELD**: `company` \| `role` \| `deadline`
 - **ORDER** (optional): `asc` \| `ascending` \| `desc` \| `descending` (default: `asc`)
 
-**Notes:**
-- Sorting is **stable** and **case-insensitive** for text fields (`company`, `role`).
-- When sorting by **deadline**, missing/invalid deadlines appear **last** for `asc` (and **first** for `desc`).
+#### **Rules**
+1. Sorting is **stable** and **case-insensitive** for text fields (`company`, `role`).
+2. When sorting by **deadline**, missing/invalid deadlines appear **last** for `asc` (and **first** for `desc`).
 
-**Examples:**
-- `sort deadline`
-- `sort company desc`
-- `sort role ascending`
+#### **Examples**
+- `sort deadline` - Sorts existing applications by deadline by the default order, ascending.
+- `sort company desc` - Sorts existing applications by company names in descending order
+- `sort role ascending` - Sorts existing applications by role names in ascending order
 
 ![sort_after.png](images/sort_after.png)
 
@@ -596,13 +521,13 @@ Updates the details of an existing job application in HustleHub.
 
 Format: `update INDEX [n/COMPANY_NAME] [r/ROLE] [s/STATUS] [d/DEADLINE] [t/TAG]…​`
 
-* Updates the job application at the specified `INDEX`.
-* The index refers to the index number shown in the displayed application list.
-* The index **must be a positive integer** 1, 2, 3, …​
-* At least one of the optional fields must be provided.
-* Existing values will be overwritten by the input values.
-* When updating tags with `t/TAG`, all existing tags will be replaced by the new tags specified.
-* You can remove all tags by typing `t/` without specifying any tags after it.
+#### **Rules**
+1. Updates the job application at the specified `INDEX`.
+2. The index refers to the index number shown in the displayed application list.
+3. The index **must be a positive number** 1, 2, 3, …​.
+4. At least one of the optional fields must be provided.
+5. Existing values will be overwritten by the input values.
+6. When updating tags with `t/TAG`, all existing tags will be replaced by the new tags specified.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 
@@ -612,8 +537,13 @@ Format: `update INDEX [n/COMPANY_NAME] [r/ROLE] [s/STATUS] [d/DEADLINE] [t/TAG]�
 
 </div>
 
-**Examples:**
+<br>
 
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
+You can remove all tags by typing `t/` without specifying any tags after it.
+</div>
+
+#### **Examples**
 * `update 1 s/INPROGRESS` - Updates the status of the 1st application to INPROGRESS.
 * `update 2 r/Senior Engineer d/15 Jan` - Updates the role and deadline using short date format.
 * `update 3 n/Apple r/iOS Developer s/APPLIED d/30 June t/remote t/urgent` - Updates all fields with flexible date.
@@ -637,11 +567,12 @@ Adds tags to a job application.
 
 Format: `tag JOB_APPLICATION_INDEX t/TAG...`
 
-Input restrictions:
+#### **Rules**
 1. A `TAG` must be 1 to 30 characters long (cannot be blank).
 2. A `TAG` is a single word (no spaces).
 3. Each job application can have up to 3 tags.
-4. Allowed characters: 
+4. Adding of tags is **case-insensitive**
+5. Allowed characters: 
    - **Letters** (a-z, A-Z)
    - **Digits** (0-9)
    - **Special characters** (at most 2 total from this list):
@@ -656,23 +587,11 @@ Input restrictions:
 If you add a mix of duplicate and new tags, the new tags will be added whilst duplicates will be ignored.
 </div>
 
-**Example Tagging Strategies:**
-
-**By priority:**
-- `tag 1 t/first-choice t/dream-job`
-- `tag 5 t/backup t/safe-option`
-
-**By work arrangement:**
-- `tag 2 t/remote t/flexible-hours`
-- `tag 7 t/onsite t/relocation-required`
-
-**By preparation needs:**
-- `tag 3 t/leetcode-heavy t/system-design`
-- `tag 4 t/C# t/Full-stack`
-
-**By timeline:**
-- `tag 1 t/fast-response t/rolling`
-- `tag 6 t/late-deadline t/backup-plan`
+#### **Examples**
+- `tag 5 t/backup t/safe-option` - Tags the 5th application with 2 tags containing the values: `backup`, and `safe-option`
+- `tag 2 t/remote` - Tags the 2nd application with 1 tag containing the value: `remote`
+- `tag 3 t/leetcode-heavy t/system-design` - Tag the 3rd application containing the values: `leetcode-heavy` and `system-design`
+- `tag 6 t/Java t/java` - Tag the 6th application with the 1st tag from the left: `Java`, and ignores the next tag `java` as both are the same tag.
 
 
 ![tag_after.png](images/tag_after.png)
@@ -687,10 +606,11 @@ Removes tags from a job application.
 
 Format: `untag JOB_APPLICATION_INDEX t/TAG...`
 
-Input restrictions:
+#### **Rules**
 1. A `TAG` must be 1 to 30 characters long (cannot be blank).
 2. A `TAG` is a single word (no spaces).
-3. Allowed characters:
+3. Adding of tags is **case-insensitive**
+4. Allowed characters:
     - **Letters** (a-z, A-Z)
     - **Digits** (0-9)
     - **Special characters** (at most 2 total from this list):
@@ -700,12 +620,12 @@ Input restrictions:
         - Hash/Pound (`#`)
         - Underscore (`_`)
         - Plus (`+`)
-4. Inputted tags must already exist on the application.
+5. Inputted tags must already exist on the application.
 
-Examples:
-- `untag 1 t/SQL`
-- `untag 2 t/6-Month t/C++`
-- `untag 3 t/python_v3.12 t/BlockChain t/Full-Stack`
+#### **Examples**
+- `untag 1 t/SQL` - Removes a tag with the value `SQL` from the 1st job application
+- `untag 2 t/6-Month t/C++` - Removes 2 tags with the values `6-Month` and `C++` from the 2nd job application
+- `untag 3 t/python_v3.12 t/BlockChain t/Full-Stack` - Removes 3 tags with the values `python_v3.12`, `BlockChain`, and `Full-Stack` from the 3rd job application.
 
 ![Untag_after.png](images/Untag_after.png)
 
@@ -748,7 +668,6 @@ This section helps you resolve common errors you might encounter while using Hus
 
 **Solutions:**
 - Use format: `yyyy-MM-ddTHH:mm` (year-month-dayThour:minute)
-- Include the uppercase 'T' separator between date and time
 - Use 24-hour format (17:00, not 5:00 PM)
 - Include minutes even if :00
 
@@ -770,49 +689,45 @@ This section helps you resolve common errors you might encounter while using Hus
 ✅ update 1 d/2026-01-15T09:00
 ```
 
-#### "Deadline cannot be in the past"
-**Cause:** The date/time you provided has already passed.
+<div>
 
-**Solution:** Use a future date and time.
+:bulb: **Tip:**
 
-**Examples:**
-```
-❌ update 1 d/2020-01-01T00:00  (past date)
-❌ add n/Meta r/SWE s/APPLIED d/2024-12-31T23:59  (already passed)
-✅ update 1 d/2026-12-31T23:59  (future date)
-```
+**Date & Time Formats**
 
----
+HustleHub now supports **flexible date formats** to make adding applications faster and easier!
 
-### Status Errors
+*When adding/updating applications, you can use any of these formats:*
 
-#### "Invalid status"
-**Error Message:** `Invalid status. Valid values are: APPLIED, INPROGRESS, REJECTED`
+**Full Date-Time Formats** (if you need a specific time):
+- `yyyy-MM-ddTHH:mm` → `2025-12-31T23:59`
+- `yyyy-MM-dd HH:mm` → `2025-12-31 23:59`
 
-**Cause:** Using a status value that doesn't exist in HustleHub.
+**Date-Only Formats** (defaults to 23:59):
+- `yyyy-MM-dd` → `2025-12-31` (defaults to 23:59)
+- `MM-dd` → `12-31` (infers current or next year, defaults to 23:59)
+- `dd MMM` → `31 Dec` (infers year, defaults to 23:59)
+- `dd MMMM` → `31 December` (infers year, defaults to 23:59)
+- `dd-MMM` → `31-Dec` (infers year, defaults to 23:59)
 
-**Solutions:**
-- Only use these three values: `APPLIED`, `INPROGRESS`, or `REJECTED`
-- Status is case-insensitive (applied = APPLIED)
-- You cannot create custom statuses
-- Use tags for more detailed tracking (e.g., t/interview, t/offer-received)
+**No Deadline Specified**:
+- Simply omit the `d/` flag entirely, and the deadline defaults to **today at 23:59**
 
-**Examples:**
-```
-❌ add n/Meta r/SWE s/PENDING d/2025-12-31T23:59
-   (PENDING is not valid)
+*When filtering by deadline:*
+- Format: `yyyy-MM-dd` (time not needed)
+- Example: `2025-12-31`
+- Matches all applications due on that date regardless of time
 
-❌ add n/Meta r/SWE s/INTERVIEW d/2025-12-31T23:59
-   (INTERVIEW is not valid - use INPROGRESS instead)
+*Smart Year Inference:*
+- When you use formats like `12-31` or `31 Dec` without specifying the year:
+    - If the date would be in the past, HustleHub automatically uses **next year**
+    - Otherwise, it uses the **current year**
 
-❌ add n/Meta r/SWE s/ACCEPTED d/2025-12-31T23:59
-   (ACCEPTED is not valid)
+*Rules:*
+- Must be a future date (no past deadlines)
+- Time component uses 24-hour format when specified
 
-✅ add n/Meta r/SWE s/APPLIED d/2025-12-31T23:59
-✅ add n/Meta r/SWE s/inprogress d/2025-12-31T23:59  (case-insensitive)
-✅ add n/Meta r/SWE s/INPROGRESS d/2025-12-31T23:59 t/phone-screen
-   (use tags for detailed status)
-```
+</div>
 
 ---
 
@@ -914,7 +829,7 @@ This section helps you resolve common errors you might encounter while using Hus
 
 **Solutions:**
 - Check the displayed list (numbers shown on the left side of each card)
-- Use only positive integers (1, 2, 3...)
+- Use only positive numbers (1, 2, 3...)
 - After filtering/finding, indices are renumbered - use the currently displayed numbers
 - Run `list` to see all applications and their current indices
 
@@ -939,49 +854,6 @@ This section helps you resolve common errors you might encounter while using Hus
 ✅ delete 1
    (deletes first result from search, not first in full list)
 ```
-
-<div markdown="span" class="alert alert-warning">:exclamation: **Important:**
-After filtering or finding, the indices you see are temporary! An application that was #5 in the full list might be #1 in filtered results. Always use the currently displayed index numbers.
-</div>
-
----
-
-### Duplicate Application Errors
-
-#### "This job application already exists in the job book"
-**Cause:** Attempting to add or update an application that would create a duplicate Company Name + Role combination.
-
-**Why this happens:** Each company-role pair must be unique. You cannot have two applications for "Google | Software Engineer" even if they have different deadlines or statuses.
-
-**Solutions:**
-1. Differentiate similar roles in the role name itself
-2. Update the existing application instead of adding a new one
-3. Delete the old application first if you're reapplying
-
-**Examples:**
-```
-# You already have: Google | Software Engineer
-
-❌ add n/Google r/Software Engineer s/APPLIED d/2025-12-31T23:59
-   (duplicate - same company and role)
-
-✅ add n/Google r/Software Engineer - Backend Team s/APPLIED d/2025-12-31T23:59
-   (differentiated in role field)
-
-✅ add n/Google r/Software Engineer (Cloud) s/APPLIED d/2025-12-31T23:59
-   (differentiated in role field)
-
-✅ add n/Google r/SWE - Seattle Office s/APPLIED d/2025-12-31T23:59
-   (different role description)
-
-# Alternative: Update the existing application
-✅ update 1 s/INPROGRESS d/2026-01-15T23:59
-   (update existing instead of adding duplicate)
-```
-
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-If you're reapplying to the same company for the same role, either update your existing application's deadline and status, or delete the old one first. For similar roles at the same company, differentiate them in the role field (e.g., "SWE - Team A" vs "SWE - Team B").
-</div>
 
 ---
 
@@ -1035,12 +907,6 @@ If you're reapplying to the same company for the same role, either update your e
 ---
 
 ### General Tips
-
-#### Application disappeared after deletion?
-- **Deletions are permanent** - there is no undo function
-- Before deleting, consider updating status to REJECTED instead
-- If you accidentally deleted, restore from the data file backup (if you made one)
-- The data file is at: `[JAR file location]/data/JobApplications.json`
 
 #### Commands not working?
 **Checklist:**
