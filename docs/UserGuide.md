@@ -59,6 +59,16 @@ HustleHub combines CLI speed with visual overview, letting you update 5 applicat
 
 --------------------------------------------------------------------------------------------------------------------
 
+## Supported Languages
+
+**Currently, HustleHub only supports the English language.** All commands, statuses, tags, and interactions should be conducted in English.
+
+**Important:** 
+- The **CLI** commands, such as `add`, `update`, `delete`, `sort`, and `filter`, as well as all statuses (e.g., `APPLIED`, `INPROGRESS`, `REJECTED`), and tags (e.g., `t/urgent`, `t/remote`) must be entered in **English**.
+- Commands are **case-sensitive**, and they must be spelled in English.
+
+--------------------------------------------------------------------------------------------------------------------
+
 ## Understanding HustleHub
 
 Before diving into commands, let's understand the core concepts of HustleHub.
@@ -446,6 +456,7 @@ Format: `delete INDEX`
 * Deletes the application at the specified `INDEX`.
 * The index refers to the index number shown in the displayed application list.
 * The index **must be a positive integer** 1, 2, 3, …​
+* Only the index is allowed; any extra parameters will result in an invalid command format error.
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd application in HustleHub.
@@ -467,7 +478,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
    * An application is returned if either field contains at least one keyword.
 
 2. **Case-Insensitive**: The search is case-insensitive.
-   * `tiktok` matches "TikTok", "TikTok Inc", or "BigTikTok".
+   * `tiktok` matches "TikTok", "TikTok Inc", or "TikTok Singapore".
 
 3. **Partial Matching**: Keywords match partial words.
    * `engineer` matches "Software Engineer", "Engineering Manager".
@@ -513,7 +524,7 @@ Filters the list of job applications based on a single field: **Tags**, **Status
 
 Format: `filter FLAG/KEYWORD`
 
-or, to remove all filters: `filter none`
+or, to remove all filters: `filter none` (`filter none` accepts extraneous parameters which will be ignored)
 
 
 #### **Filtering Rules**
@@ -522,6 +533,7 @@ or, to remove all filters: `filter none`
 1. **Tags (`t/`)**: Matches if the `KEYWORD` is **contained** in any tag
    (e.g., `t/backend` matches a tag named "backend-engineer").
     * The search is **case-insensitive**.
+    * Empty tags are considered as invalid inputs.
 
 
 2. **Application Status (`s/`)**: Matches an exact, **case-insensitive** status.

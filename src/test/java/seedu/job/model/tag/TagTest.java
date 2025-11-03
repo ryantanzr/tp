@@ -2,7 +2,6 @@ package seedu.job.model.tag;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.job.testutil.Assert.assertThrows;
 
@@ -38,12 +37,25 @@ public class TagTest {
     }
 
     @Test
-    public void equals_caseSensitivity() {
+    public void equals_caseInsensitivity() {
         Tag lowerCase = new Tag("java");
         Tag upperCase = new Tag("JAVA");
         Tag mixedCase = new Tag("Java");
 
-        assertNotEquals(lowerCase, upperCase); // or assertEquals if case-insensitive
+        // Tags are case-insensitive for equality
+        assertEquals(lowerCase, upperCase);
+        assertEquals(lowerCase, mixedCase);
+        assertEquals(upperCase, mixedCase);
+    }
+
+    @Test
+    public void equals_preservesDisplayCase() {
+        Tag lowerCase = new Tag("java");
+        Tag upperCase = new Tag("JAVA");
+
+        // Even though they're equal, the original case is preserved
+        assertEquals("java", lowerCase.tagName);
+        assertEquals("JAVA", upperCase.tagName);
     }
 
     @Test

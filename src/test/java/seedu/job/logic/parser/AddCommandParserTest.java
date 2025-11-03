@@ -181,4 +181,33 @@ public class AddCommandParserTest {
         assertParseFailure(parser, " n/Google r/SoftwareEngineer s/APPLIED d/2020-01-01T00:00",
                 "Deadline cannot be in the past. Please provide a future date and time.");
     }
+
+    @Test
+    public void parse_emptyCompanyName_throwsParseException() {
+        // Test empty company name
+        assertParseFailure(parser, " n/ r/SoftwareEngineer s/APPLIED d/2025-12-31T23:59",
+                "Company name cannot be empty");
+
+        // Test whitespace-only company name
+        assertParseFailure(parser, " n/   r/SoftwareEngineer s/APPLIED d/2025-12-31T23:59",
+                "Company name cannot be empty");
+    }
+
+    @Test
+    public void parse_emptyRole_throwsParseException() {
+        // Test empty role
+        assertParseFailure(parser, " n/Google r/ s/APPLIED d/2025-12-31T23:59",
+                "Role cannot be empty");
+
+        // Test whitespace-only role
+        assertParseFailure(parser, " n/Google r/    s/APPLIED d/2025-12-31T23:59",
+                "Role cannot be empty");
+    }
+
+    @Test
+    public void parse_tooManyTags_throwsParseException() {
+        // Test exceeding maximum number of tags
+        assertParseFailure(parser, " n/Google r/Engineer s/APPLIED d/2025-12-31 t/t1 t/t2 t/t3 t/t4",
+                "Maximum number of tags per application is: 3");
+    }
 }

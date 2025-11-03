@@ -81,7 +81,7 @@ public class DataStorageManagerTest {
     }
 
     @Test
-    public void getAddressBookFilePath() {
+    public void getJobBookFilePath() {
         assertNotNull(dataStorageManager.getDataFilePath());
     }
 }
