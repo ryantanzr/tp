@@ -827,7 +827,7 @@ testers are expected to do more *exploratory* testing.
    1. Download the jar file and copy into an empty folder
 
    1. Double-click the jar file or run `java -jar HustleHub.jar` from the terminal<br>
-      Expected: Shows the GUI with sample job applications. The window size may not be optimum.
+      Expected: Shows the GUI with no job applications. The window size may not be optimum.
 
 1. Saving window preferences
 
@@ -843,14 +843,14 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `add n/Google r/Software Engineer s/APPLIED d/2025-12-31T23:59`<br>
       Expected: New application is added to the list. The card is highlighted with a white-to-blue gradient. Details of the added application shown in the result display.
 
-   1. Test case: `add n/Google r/Software Engineer s/APPLIED d/2025-12-31T23:59 t/urgent t/remote`<br>
+   1. Test case: `add n/Meta r/Software Engineer s/APPLIED d/2025-12-31T23:59 t/urgent t/remote`<br>
       Expected: Similar to previous, but with tags displayed on the card.
 
    1. Test case: `add n/Google r/Software Engineer s/INVALID d/2025-12-31T23:59`<br>
       Expected: No application is added. Error message about invalid status shown.
 
-   1. Test case: `add n/Google r/Software Engineer`<br>
-      Expected: No application is added. Error message about missing required fields shown.
+   1. Test case: `add n/Tiktok r/Software Engineer`<br>
+      Expected: No application is added. Error message about invalid format shown.
 
 ### Deleting a job application
 
@@ -967,9 +967,6 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `filter s/REJECTED`<br>
       Expected: Only applications with REJECTED status shown.
 
-   1. Test case: `filter s/STALE` (if expiry feature implemented)<br>
-      Expected: Only applications with STALE status shown.
-
    1. Test case: `filter t/urgent`<br>
       Expected: Only applications tagged with "urgent" shown.
 
@@ -1013,7 +1010,7 @@ testers are expected to do more *exploratory* testing.
 1. Accessing help information
 
    1. Test case: `help`<br>
-      Expected: Help window opens showing command usage instructions. Link to user guide displayed.
+      Expected: Help window displays ink to user guide.
 
    1. Test case: Execute `help` when help window already open<br>
       Expected: Help window gains focus (brought to front).
