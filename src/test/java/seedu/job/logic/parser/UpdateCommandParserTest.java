@@ -251,4 +251,30 @@ public class UpdateCommandParserTest {
         expectedCommand = new UpdateJobCommand(targetIndex, descriptor);
         assertParseSuccess(parser, userInput, expectedCommand);
     }
+
+    @Test
+    public void parse_emptyCompanyName_failure() {
+        Index targetIndex = INDEX_FIRST_JOB;
+
+        // Empty company name
+        String userInput = targetIndex.getOneBased() + " " + PREFIX_NAME;
+        assertParseFailure(parser, userInput, "Company name cannot be empty");
+
+        // Whitespace-only company name
+        userInput = targetIndex.getOneBased() + " " + PREFIX_NAME + "   ";
+        assertParseFailure(parser, userInput, "Company name cannot be empty");
+    }
+
+    @Test
+    public void parse_emptyRole_failure() {
+        Index targetIndex = INDEX_FIRST_JOB;
+
+        // Empty role
+        String userInput = targetIndex.getOneBased() + " " + PREFIX_ROLE;
+        assertParseFailure(parser, userInput, "Role cannot be empty");
+
+        // Whitespace-only role
+        userInput = targetIndex.getOneBased() + " " + PREFIX_ROLE + "   ";
+        assertParseFailure(parser, userInput, "Role cannot be empty");
+    }
 }

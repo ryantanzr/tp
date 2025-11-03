@@ -39,10 +39,18 @@ public class AddCommandParser implements JobParser<AddJobCommand> {
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_ROLE, PREFIX_STATUS, PREFIX_DEADLINE);
 
         try {
-            String companyName = argMultimap.getValue(PREFIX_NAME).get();
-            String role = argMultimap.getValue(PREFIX_ROLE).get();
+            String companyName = argMultimap.getValue(PREFIX_NAME).get().trim();
+            String role = argMultimap.getValue(PREFIX_ROLE).get().trim();
             String statusStr = argMultimap.getValue(PREFIX_STATUS).get();
             Set<Tag> tags = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
+
+            // Validate company name and role are not empty
+            if (companyName.isEmpty()) {
+                throw new ParseException("Company name cannot be empty");
+            }
+            if (role.isEmpty()) {
+                throw new ParseException("Role cannot be empty");
+            }
 
             if (tags.size() > JobApplication.MAX_TAGS) {
                 throw new IllegalArgumentException("Maximum number of tags per application is: "

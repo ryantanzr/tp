@@ -52,10 +52,18 @@ public class UpdateCommandParser implements JobParser<UpdateJobCommand> {
         UpdateJobDescriptor updateJobDescriptor = new UpdateJobDescriptor();
 
         if (argMultimap.getValue(PREFIX_NAME).isPresent()) {
-            updateJobDescriptor.setCompanyName(argMultimap.getValue(PREFIX_NAME).get());
+            String companyName = argMultimap.getValue(PREFIX_NAME).get().trim();
+            if (companyName.isEmpty()) {
+                throw new ParseException("Company name cannot be empty");
+            }
+            updateJobDescriptor.setCompanyName(companyName);
         }
         if (argMultimap.getValue(PREFIX_ROLE).isPresent()) {
-            updateJobDescriptor.setRole(argMultimap.getValue(PREFIX_ROLE).get());
+            String role = argMultimap.getValue(PREFIX_ROLE).get().trim();
+            if (role.isEmpty()) {
+                throw new ParseException("Role cannot be empty");
+            }
+            updateJobDescriptor.setRole(role);
         }
         if (argMultimap.getValue(PREFIX_STATUS).isPresent()) {
             try {
