@@ -478,7 +478,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
    * An application is returned if either field contains at least one keyword.
 
 2. **Case-Insensitive**: The search is case-insensitive.
-   * `tiktok` matches "TikTok", "TikTok Inc", or "BigTikTok".
+   * `tiktok` matches "TikTok", "TikTok Inc", or "TikTok Singapore".
 
 3. **Partial Matching**: Keywords match partial words.
    * `engineer` matches "Software Engineer", "Engineering Manager".
