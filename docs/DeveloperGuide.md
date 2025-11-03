@@ -146,17 +146,11 @@ The `Model` component,
 
 The `Storage` component manages **persistence (saving and loading)** for job application and user preference data, using the JSON format.
 
-<details>
-    <summary><b>Technical Remarks</b></summary>
 
 * For easy customisation/replacement, `JobApplicationStorage` and `UserPrefStorage` are left as interfaces to abstract the storage component.
-
 * `DataStorageManager` can be treated as a `JobApplicationStorage` or `UserPrefStorage` object as it implements both interfaces.
-
 * Depends on some classes in the `Model` component such as `JobApplication` as it saves or loads objects from said component.
-* `JsonSerializableJobApplicationList & SerializableJobApplication` have a dependency with on JobApplications as both classes possess logic to [deserialize/serialize](#glossary) `JobApplication` objects.
-
-</details>
+* `JsonSerializableJobApplicationList & SerializableJobApplication` have a dependency with on JobApplications as both classes possess logic to deserialize/serialize `JobApplication` objects.
 
 ---
 
@@ -166,102 +160,17 @@ Classes used by multiple components are in the `seedu.job.commons` package.
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Implementation**
-
-This section describes some noteworthy details on how certain features are implemented.
-
-### Card Highlighting Feature
-
-#### Implementation
-
-The card highlighting mechanism provides visual feedback to users by highlighting recently modified job application cards with an elegant white-to-blue gradient. This feature is implemented across the Model, Logic, and UI layers.
-
-**Architecture Components:**
-
-The implementation involves:
-* `Model` & `ModelManager`: Stores the recently modified `JobApplication`
-* `Logic` & `LogicManager`: Exposes the recently modified application to the UI
-* Command classes: Set or clear the recently modified application based on operation type
-* `JobApplicationListPanel`: Tracks and refreshes the view when highlighting changes
-* `JobApplicationCard`: Conditionally applies CSS highlighting class
-* `MainWindow`: Synchronizes highlight state after each command execution
-
-**Key Operations:**
-
-* `Model#setRecentlyModifiedApplication(JobApplication)` — Sets the application to be highlighted
-* `Model#getRecentlyModifiedApplication()` — Returns the currently highlighted application
-* `JobApplicationListPanel#setRecentlyModifiedApplication(JobApplication)` — Updates the panel and refreshes the view
-
-**Command Behavior:**
-
-Commands are categorized into two groups:
-
-1. **Modifying Commands** (set highlight):
-   - `AddJobCommand` - Highlights the newly added application
-   - `UpdateJobCommand` - Highlights the updated application  
-   - `TagJobCommand` - Highlights the tagged application
-   - `UntagJobCommand` - Highlights the untagged application
-
-2. **Non-Modifying Commands** (clear highlight):
-   - `DeleteJobCommand` - Clears all highlights
-   - `FilterCommand` - Clears all highlights
-   - `SortCommand` - Clears all highlights
-   - `FindCommand` - Clears all highlights
-
-**UI Implementation:**
-
-The `JobApplicationCard` constructor accepts an `isRecentlyModified` boolean parameter. When `true`, it adds the CSS class `"recently-modified"` to the card pane, which applies:
-* White-to-blue gradient background (left to right)
-* Enhanced blue-tinted shadow for subtle emphasis
-* Maintains consistent padding and border radius
-
-**Example Usage Scenario:**
-
-Step 1. User executes `tag 1 t/urgent`. The `TagJobCommand` calls `model.setRecentlyModifiedApplication(taggedJob)`.
-
-Step 2. `MainWindow#executeCommand()` calls `jobApplicationListPanel.setRecentlyModifiedApplication(logic.getRecentlyModifiedApplication())`.
-
-Step 3. The panel refreshes, and the card at index 1 is rendered with the highlight gradient.
-
-Step 4. User executes `filter s/APPLIED`. The `FilterCommand` calls `model.setRecentlyModifiedApplication(null)`.
-
-Step 5. The panel refreshes, and all cards are rendered without highlighting.
-
-#### Design Considerations:
-
-**Aspect: Where to store the recently modified application:**
-
-* **Alternative 1 (current choice):** Store in Model layer
-  * Pros: Centralized state management, accessible to all components
-  * Cons: Adds additional state to Model
-
-* **Alternative 2:** Store in UI layer only
-  * Pros: Simpler model, UI-specific concern stays in UI
-  * Cons: Difficult to synchronize across command executions, loss of state on view refresh
-
-**Aspect: How to identify recently modified applications:**
-
-* **Alternative 1 (current choice):** Use object equality comparison
-  * Pros: Simple, works with immutable command pattern
-  * Cons: Requires exact object reference match
-
-* **Alternative 2:** Use unique identifier (e.g., company + role)
-  * Pros: More robust to object recreation
-  * Cons: More complex logic, potential edge cases with duplicates
+## Design Considerations
 
 ### Job Application Uniqueness
 
-#### Design Decision
-
-**What makes a job application unique?**
 
 A job application in HustleHub is uniquely identified by the combination of:
 - **Company Name** (case-sensitive)
 - **Role** (case-sensitive)
+- **Deadline**
 
-The system enforces that no two job applications can have the same company name and role combination.
-
-**Implementation:**
+**Uniqueness Implementation:**
 
 ```java
 public final String getUniqueKey() {
@@ -274,14 +183,8 @@ public boolean isSameJobApplication(JobApplication otherJobApplication) {
 }
 ```
 
-#### Why This Choice?
-
-**Requirements Analysis:**
-
-1. **Target User Behavior**: Computing students typically apply to each company for a specific role once per application cycle
-2. **Simplicity**: Students think in terms of "I applied to Google for SWE" - a natural mental model
-3. **Prevents Accidental Duplicates**: Guards against users inadvertently adding the same application multiple times
-4. **Data Integrity**: Ensures clean, organized tracking without confusing duplicate entries in the UI
+**Duplicate Handling:**
+* This combination of 3 fields allows users flexibility to apply for many openings with the same company name and role name pairing. Naturally, this combination is hard to violate as users very rarely apply for at least 2 openings with the same pairing.
 
 **Alternative Considerations:**
 
@@ -289,138 +192,63 @@ We considered but rejected these alternatives:
 
 | Uniqueness Criteria | Reason for Rejection |
 |---------------------|---------------------|
-| Company + Role + Deadline | Deadline changes during updates would cause unexpected conflicts; doesn't match user mental model |
+| Company + Role | Consider that companies may open multiple openings with the same pairing. Using this would be too restrictive for the user.|
 | Company + Role + Tags | Tags are optional and mutable; would force users to add tags to differentiate positions; breaks tag flexibility |
 | Company + Role + Status | Status changes as application progresses; would prevent natural status updates |
 
-#### Pros and Cons
-
-**Advantages ✅**
-
-1. **Simple and Predictable**
-   - Users understand: "One application per company-role pair"
-   - Clear error messages: "You already have an application for this position"
-   - No surprise conflicts from field updates
-
-2. **Minimal Edge Cases**
-   - Only checks 2 required fields (no null handling needed)
-   - Both fields are conceptually immutable (company name and role title don't change)
-   - Consistent behavior across add and update operations
-
-3. **Clean User Experience**
-   - No confusing duplicate "Google | Software Engineer" entries in the UI
-   - Tags remain purely organizational (can be added/removed freely)
-   - Natural workflow for status/deadline updates
-
-4. **Flexible Within Constraints**
-   - Users can differentiate similar positions in the role field:
-     * "Software Engineer - Backend Team"
-     * "Software Engineer (Cloud Infrastructure)"
-     * "SWE - Seattle Office"
-
-**Limitations ❌**
-
-1. **Re-applications Require Deletion**
-   - If rejected and reapplying later, user must delete old entry first
-   - Workaround: Keep old entry and update deadline/status
-   - Future enhancement: Add "clone" or "reapply" command
-
-2. **Same Role at Multiple Teams**
-   - Cannot track "Google SWE - Cloud" and "Google SWE - Search" as separate entries with identical role names
-   - Workaround: Differentiate in the role field itself
-   - Encourages explicit role specification, improving data clarity
-
-3. **No Built-in Historical Tracking**
-   - Previous applications to the same company-role are lost if deleted
-   - Workaround: Update status to REJECTED instead of deleting
-   - Future enhancement: Add archiving feature
-
-#### Design Considerations
-
-**Aspect: What fields determine uniqueness?**
-
-* **Alternative 1 (current choice):** Company + Role only
-  * Pros: Simple mental model, prevents accidental duplicates, minimal edge cases
-  * Cons: Cannot track re-applications or multiple teams for same role title
-
-* **Alternative 2:** Company + Role + Deadline
-  * Pros: Allows re-applications with different deadlines
-  * Cons: Updating deadline causes conflicts; same deadline = artificial conflict
-
-* **Alternative 3:** Company + Role + Tags
-  * Pros: Flexible differentiation using existing tag system
-  * Cons: Tags become mandatory for duplicates; mutable tags break uniqueness; confusing UX
-
-**Aspect: Should tags affect uniqueness?**
-
-* **Alternative 1 (current choice):** Tags are purely organizational
-  * Pros: Tags remain flexible and optional; no unexpected conflicts from tag changes
-  * Cons: Cannot use tags to differentiate positions
-
-* **Alternative 2:** Include tags in uniqueness check
-  * Pros: Allows tracking multiple same-titled positions
-  * Cons: Removing tags creates conflicts; forces tag usage; changes tag purpose from organizational to structural
-
-**Conclusion:** The company + role uniqueness provides the best balance of simplicity, usability, and alignment with user needs. The limitations can be addressed through user guidance (role naming conventions) and future enhancements (clone/archive features).
-
----
-
-### Tag Management Feature
-
-#### Implementation
+### Tag Management
 
 The tag management feature allows users to add and remove tags from job applications. Tags are implemented as immutable `Tag` objects with validation constraints.
-
-**Tag Constraints:**
-* Must be a single word (no spaces)
-* Maximum 30 characters
-* Can contain letters, numbers, and up to 2 special characters from: `-`, `.`, `@`, `#`, `_`, `+`
-* Each application can have up to 3 tags
 
 **Key Classes:**
 * `Tag`: Represents an immutable tag with validation
 * `TagJobCommand`: Adds tags to a job application
 * `UntagJobCommand`: Removes tags from a job application
 
+**Duplicate Handling:**
+* Tags are case-insensitive during computation to disallow tags like `t/Java` and `t/java` from existing at the same time as they are fundamentally the same tag.
+* Note that the displayed case is preserved to allow users to see their original input.
+
 **Tag Command Implementation:**
 
 The `TagJobCommand` creates a new `JobApplication` instance with the updated tag set, following the immutable pattern:
 
+<img src="images/TagSequenceDiagram.png"/>
+
 1. Retrieves the target application from the filtered list
-2. Validates tag capacity (max 3 tags)
-3. Creates new application with `createTaggedJob()` method
-4. Calls `model.setJobApplication()` to replace the old application
-5. Sets the newly tagged application as recently modified
+2. Checks if the index is invalid
+3. Validates tag capacity (max 3 tags)
+4. Creates new application with `createTaggedJob()` method
+5. Calls `model.setJobApplication()` to replace the old application
+
 
 **Untag Command Implementation:**
 
 Similar to tag command but removes tags:
 
+<img src="images/UntagSequenceDiagram.png"/>
+
 1. Retrieves the target application
-2. Validates that all tags to remove exist
-3. Creates new application with `createUntaggedJob()` method
-4. Replaces and highlights the application
+2. Checks if the index is invalid
+3. Validates that all tags to remove exist
+4. Creates new application with `createUntaggedJob()` method
+5. Calls `model.setJobApplication()` to replace the old application
 
-**Error Handling:**
 
-The feature provides clear, actionable error messages:
-* **Tag capacity exceeded**: Explains the limit and suggests using `untag` first
-* **Tag doesn't exist**: Clarifies which tags don't exist and suggests checking current tags
-* **Invalid tag format**: Explains the validation rules with examples
+---
 
 ### [Proposed] Job Application Expiry
 
 #### Requirements
 
-This feature automatically marks job applications as STALE when they have not been edited for 14 days.
+This feature intends to mark job applications as `STALE` when they have not been edited for 14 days.
 
 - Add a new status value to the existing status enum: `STALE`.
 - Add a new field to `JobApplication`: `lastEditedTime` (type: `java.time.LocalDateTime`). This field records the last time the application was modified by any modifying command (add, update, tag, untag).
-- On application start-up, HustleHub must perform a one-time calculation over all persisted job applications and set any application whose `lastEditedTime` is 14 full days (>= 14 days) in the past to have status `STALE`.
+- On application start-up, HustleHub will perform a one-time calculation over all persisted job applications and set any application whose `lastEditedTime` is 14 full days (>= 14 days) in the past to have status `STALE`.
 
-Notes / assumptions:
-- If a persisted application does not contain a `lastEditedTime` (older data format), treat its `lastEditedTime` as the time the application was loaded on startup (i.e., `LocalDateTime.now()` at load). This avoids accidentally marking legacy data as stale unless the user actually hasn't edited it since file creation — see migration notes below.
-- `STALE` is intended to be an additional, non-terminal status used to surface older, unattended applications. It does not replace `REJECTED` and may coexist with other workflows. By default the startup scan will set `STALE` for any application regardless of its current status, except where doing so would conflict with business rules you prefer (see alternatives below). If you want `REJECTED` or other terminal statuses to be exempt, specify and we can update the algorithm accordingly.
+Notes:
+- `STALE` is intended to be an additional, non-terminal status used to surface older, unattended applications. It does not replace `REJECTED` and may coexist with other workflows.
 
 #### Data model changes
 
@@ -431,63 +259,19 @@ Notes / assumptions:
    - Add: `private final LocalDateTime lastEditedTime;`
    - Constructor(s) and factory methods must accept and persist `lastEditedTime`.
    - All modifying operations (add, update, tag, untag) must set `lastEditedTime = LocalDateTime.now()` for the newly created `JobApplication` instance.
-   - `SerializableJobApplication` (storage layer) must be updated to read/write `lastEditedTime` (ISO-8601 format via `LocalDateTime.toString()` / `LocalDateTime.parse(...)`). When parsing older JSON that lacks the field, fall back to `LocalDateTime.now()` (see migration note).
+   - `SerializableJobApplication` (storage layer) must be updated to read/write `lastEditedTime` (ISO-8601 format via `LocalDateTime.toString()` / `LocalDateTime.parse(...)`).
 
 #### Startup calculation (where to run)
+- Run the staleness calculation once during application startup after the data is read from disk in `MainApp.initModelManager()`.
 
-Run the staleness calculation once during application startup after the persisted data is read from disk but before the `ModelManager` is constructed or before the `Logic`/`Ui` components are initialized and shown. Concretely, a good spot is inside `MainApp.init()` after `storage.readDataFile()` returns the `List<JobApplication>` and before calling `new ModelManager(...)`.
-
-Example high-level algorithm (pseudo-code):
-
-```java
-// in MainApp.init() after reading applicationList from storage
-LocalDateTime now = LocalDateTime.now();
-Duration staleThreshold = Duration.ofDays(14);
-List<JobApplication> migrated = new ArrayList<>();
-for (JobApplication app : applicationList) {
-   LocalDateTime lastEdited = app.getLastEditedTime();
-   if (lastEdited == null) {
-      // migration fallback: treat as just-loaded
-      lastEdited = now;
-   }
-   if (Duration.between(lastEdited, now).compareTo(staleThreshold) >= 0) {
-      if (app.getStatus() != JobApplication.Status.STALE) {
-         JobApplication staleApp = app.withStatus(JobApplication.Status.STALE)
-                                .withLastEditedTime(app.getLastEditedTime());
-         migrated.add(staleApp);
-         continue;
-      }
-   }
-   migrated.add(app);
-}
-// use `migrated` list to build ModelManager / JobBook
-```
-
-Notes:
-- The sample uses immutable-style `withStatus(...)` / `withLastEditedTime(...)` helpers that return a new `JobApplication` instance; implement equivalent constructors if your codebase uses a different pattern.
-- Running the migration in `MainApp.init()` ensures the UI and logic always see the canonical (post-migration) state and that `ModelManager` / `JobBook` invariants (e.g., uniqueness) are preserved.
-
-#### Persistence and migration
-
+#### Persistence
 - Update `SerializableJobApplication` / `JsonSerializableJobApplicationList` to include `lastEditedTime` when serializing.
-- For backwards compatibility, when deserializing JSON that lacks `lastEditedTime`, set `lastEditedTime = LocalDateTime.now()` (or optionally `Files.getLastModifiedTime(path)` if you prefer file time semantics). Document this behavior in the release notes so users understand the migration effect.
 
 #### Command behavior changes
-
 - Every command that modifies a job application must update `lastEditedTime` to `LocalDateTime.now()` on the newly created `JobApplication` object that replaces the old one. This includes: `AddJobCommand`, `UpdateJobCommand`, `TagJobCommand`, `UntagJobCommand` (and any future modifying commands such as `Clone`, `Archive`, etc.).
 
-#### Edge cases & testing
-
+#### Edge cases
 - Timezones: Use `LocalDateTime` consistently across serialization and comparisons; if your app will run across machines in different timezones, consider `ZonedDateTime` or persist UTC (`Instant`) instead. For single-user desktop app, `LocalDateTime` is acceptable.
-- Clock skew: If tests or users modify system clocks, behavior will follow the system clock. Consider adding a clock abstraction for testability.
-- Tests to add:
-  - Unit: `isStale(lastEditedTime, now)` boundary tests (13d23h59m -> false; 14d00h00m -> true).
-  - Integration: Persisted JSON without `lastEditedTime` -> migration does not accidentally mark as stale unless it truly is.
-
-#### Alternatives / configuration
-
-- Make the stale threshold configurable (user preference or config.json) instead of fixed 14 days.
-- Exempt certain statuses (e.g., `REJECTED`) from being set to `STALE` on startup. If desired, update the startup condition to only mark applications whose status is in a configurable set (default: APPLIED, INPROGRESS).
 
 --------------------------------------------------------------------------------------------------------------------
 
