@@ -53,7 +53,7 @@ public class AddCommandParser implements JobParser<AddJobCommand> {
             }
 
             if (tags.size() > JobApplication.MAX_TAGS) {
-                throw new IllegalArgumentException("Maximum number of tags per application is: "
+                throw new ParseException("Maximum number of tags per application is: "
                         + JobApplication.MAX_TAGS);
             }
 
