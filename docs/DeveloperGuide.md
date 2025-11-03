@@ -184,17 +184,17 @@ public boolean isSameJobApplication(JobApplication otherJobApplication) {
 ```
 
 **Duplicate Handling:**
-* This combination of 3 fields allows users flexibility to apply for many openings with the same company name and role name pairing. Naturally, this combination is hard to violate as users very rarely apply for at least 2 openings with the same pairing.
+* Given that companies allows users to have 1 job application per job opening. Minimally these 2 compulsory values are required. Adding additional fields may allow even more duplicate-related issues to arise.
 
 **Alternative Considerations:**
 
 We considered but rejected these alternatives:
 
-| Uniqueness Criteria | Reason for Rejection |
-|---------------------|---------------------|
-| Company + Role | Consider that companies may open multiple openings with the same pairing. Using this would be too restrictive for the user.|
-| Company + Role + Tags | Tags are optional and mutable; would force users to add tags to differentiate positions; breaks tag flexibility |
-| Company + Role + Status | Status changes as application progresses; would prevent natural status updates |
+| Uniqueness Criteria       | Reason for Rejection                                                                                            |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------|
+| Company + Role + deadline | Consider that users are restricted to 1 application per job opening.                                            |
+| Company + Role + Tags     | Tags are optional and mutable; would force users to add tags to differentiate positions; breaks tag flexibility |
+| Company + Role + Status   | Status changes as application progresses; would prevent natural status updates                                  |
 
 ### Tag Management
 
