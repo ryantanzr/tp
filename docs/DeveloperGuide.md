@@ -168,7 +168,6 @@ Classes used by multiple components are in the `seedu.job.commons` package.
 A job application in HustleHub is uniquely identified by the combination of:
 - **Company Name** (case-sensitive)
 - **Role** (case-sensitive)
-- **Deadline**
 
 **Uniqueness Implementation:**
 
