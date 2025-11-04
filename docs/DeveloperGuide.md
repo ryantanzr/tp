@@ -142,7 +142,7 @@ The `Model` component,
 
 **API** : [`DataStorage.java`](https://github.com/AY2526S1-CS2103T-T11-1/tp/blob/master/src/main/java/seedu/job/storage/DataStorage.java)
 
-<img src="images/HustleHub-Storage.png"/>
+<img src="images/StorageClassDiagram.png"/>
 
 The `Storage` component manages **persistence (saving and loading)** for job application and user preference data, using the JSON format.
 

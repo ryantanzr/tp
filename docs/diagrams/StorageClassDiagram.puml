@@ -1,13 +1,89 @@
+!define UI_COLOR #1D8900
+!define UI_COLOR_T1 #83E769
+!define UI_COLOR_T2 #3FC71B
+!define UI_COLOR_T3 #166800
+!define UI_COLOR_T4 #0E4100
+
+!define LOGIC_COLOR #3333C4
+!define LOGIC_COLOR_T1 #C8C8FA
+!define LOGIC_COLOR_T2 #6A6ADC
+!define LOGIC_COLOR_T3 #1616B0
+!define LOGIC_COLOR_T4 #101086
+
+!define MODEL_COLOR #9D0012
+!define MODEL_COLOR_T1 #F97181
+!define MODEL_COLOR_T2 #E41F36
+!define MODEL_COLOR_T3 #7B000E
+!define MODEL_COLOR_T4 #51000A
+
+!define STORAGE_COLOR #A38300
+!define STORAGE_COLOR_T1 #FFE374
+!define STORAGE_COLOR_T2 #EDC520
+!define STORAGE_COLOR_T3 #806600
+!define STORAGE_COLOR_T2 #544400
+
+!define USER_COLOR #000000
+
+skinparam Package {
+    BackgroundColor #FFFFFF
+    BorderThickness 1
+    FontSize 16
+}
+
+skinparam Class {
+    FontColor #FFFFFF
+    FontSize 15
+    BorderThickness 1
+    BorderColor #FFFFFF
+    StereotypeFontColor #FFFFFF
+    FontName Arial
+}
+
+skinparam Actor {
+    BorderColor USER_COLOR
+    Color USER_COLOR
+    FontName Arial
+}
+
+skinparam Sequence {
+    MessageAlign center
+    BoxFontSize 15
+    BoxPadding 0
+    BoxFontColor #FFFFFF
+    FontName Arial
+}
+
+skinparam Participant {
+    FontColor #FFFFFFF
+    Padding 20
+}
+
+skinparam ArrowFontStyle bold
+skinparam MinClassWidth 50
+skinparam ParticipantPadding 10
+skinparam Shadowing false
+skinparam DefaultTextAlignment center
+skinparam packageStyle Rectangle
+
+hide footbox
+hide members
+hide circle
+
 @startuml Storage Component
+skinparam arrowThickness 1.1
+skinparam arrowColor STORAGE_COLOR
+skinparam classBackgroundColor STORAGE_COLOR
+
+package Storage as StoragePackage {
 
 ' Interfaces
-interface JobApplicationStorage
-interface UserPrefsStorage
-interface DataStorage
+class "<<interface>>\nJobApplicationStorage" as JobApplicationStorage
+class "<<interface>>\nUserPrefsStorage" as UserPrefsStorage
+class "<<interface>>\nDataStorage" as DataStorage
 
 ' Interface Relationships (Inheritance/Generalization)
-DataStorage <|-- JobApplicationStorage
-DataStorage <|-- UserPrefsStorage
+DataStorage --|> JobApplicationStorage
+DataStorage --|> UserPrefsStorage
 
 ' Classes
 class JsonJobApplicationStorage
@@ -16,7 +92,8 @@ class DataStorageManager
 
 class JsonSerializableJobApplicationList
 class SerializableJobApplication
-class JobApplication
+class JsonAdaptedTag
+
 
 ' Inheritance/Realization Relationships (Dashed lines with hollow triangles)
 JobApplicationStorage <|.. JsonJobApplicationStorage
@@ -28,15 +105,12 @@ DataStorageManager --> "1" JobApplicationStorage
 DataStorageManager --> "1" UserPrefsStorage
 
 ' JsonJobApplicationStorage uses the serializable list
-JsonJobApplicationStorage -- JsonSerializableJobApplicationList
+JsonJobApplicationStorage --> JsonSerializableJobApplicationList
 
-JsonSerializableJobApplicationList --- "*" SerializableJobApplication
+JsonSerializableJobApplicationList ---> "*" SerializableJobApplication
+SerializableJobApplication ---> "*" JsonAdaptedTag
 
-' Dependency/Association (Dashed arrow) for conversion/mapping
-SerializableJobApplication .> JobApplication : deserializes >
-JsonSerializableJobApplicationList .> JobApplication : contains
+}
 
-' Title
-footer Storage Component
 
 @enduml
